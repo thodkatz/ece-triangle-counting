@@ -5,9 +5,9 @@ import v1
 import v2
 import trace_cubed_matrix as trace
 
-G = nx.erdos_renyi_graph(50, 0.35, seed=random.seed(), directed=False)
+G = nx.erdos_renyi_graph(100, 0.35, seed=random.seed(), directed=False)
 adjacency = nx.to_numpy_array(G)
-print("The adjacency for this test case will be: ")
+#print("The adjacency for this test case will be: ")
 #print(adjacency)
 
 nx.draw(G)
@@ -30,7 +30,7 @@ for i in range(len(G)):
 print("Total numbers of triangles: " + str(count))
 
 print("\n<----------GeeksForGeeks trace method---------->")
-trace.V = 50 # number of nodes
+trace.V = 100 # number of nodes
 print("Total number of Triangle in Graph :", trace.triangleInGraph(adjacency))
 
 print("\n<----------NetworkX built-in function---------->")
