@@ -11,7 +11,7 @@ def countTriangles (adjacency):
                     vertices[k] += 1
                     vertices[j] += 1
                     count += 1
-    return vertices, count
+    return vertices, count 
 
 
 if __name__ == "__main__":

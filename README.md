@@ -58,6 +58,9 @@ Using the CSC storage scheme, implement in `C/C++` the sparse matrix-vector prod
 - Upload the source code of V3 and V4 (sequential and parallel) on GitHub, BitBucket, Dropbox, Google Drive, etc. and add a link in your report.
 
 # Undirected Graph
-
 ![undirected graph](docs/undirected_graph.png)
+
+# Benchmarking Python versions
+![benchmarking](docs/benchmarking.png)
+
 
