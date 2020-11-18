@@ -4,15 +4,15 @@ import random
 import time
 import v1
 import v2
-import trace
+import trace_cube_matrix as trace
 
-G = nx.erdos_renyi_graph(1000, 0.35, seed=random.seed(), directed=False)
+G = nx.erdos_renyi_graph(50, 0.35, seed=random.seed(), directed=False)
 adjacency = nx.to_numpy_array(G)
 #print("The adjacency for this test case will be: ")
-#print(adjacency)
+print(adjacency)
 
 nx.draw(G)
-plt.savefig("docs/undirected_graph.png")
+plt.savefig("../../docs/undirected_graph.png")
 
 print("\n<----------v1---------->")
 start = time.process_time()
@@ -33,7 +33,7 @@ for i in range(len(G)):
 print("Total number of triangles: ", count)
 
 print("\n<----------GeeksForGeeks trace method---------->")
-trace.V = 1000 # number of nodes
+trace.V = 50 # number of nodes
 start = time.process_time()
 count = trace.triangleInGraph(adjacency)
 print("Execution time: ", (time.process_time() - start))
