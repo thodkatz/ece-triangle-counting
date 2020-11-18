@@ -1,16 +1,16 @@
 CC=g++
 CFLAGS=-O3 -g
 
+OBJ=main.o v2.o v1.o
 
-all: v3
+all: main
 	
-v3: *.o
-	$(CC) $^ -o $@
+main: $(OBJ) 
+	$(CC) $(CFLAGS) $^ -o $@ 
 
-%.o: %.c
-	$(CC) -c $<
+$(OBJ): main.h 
 
 .PHONY: clean
 
 clean:
-	rm -r *.o v3
+	rm -r *.o main
