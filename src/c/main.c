@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
 
     // create a random array WARNING: it should be symmetrical. Not just random
     srand(time(NULL));
-    printf("The random generated array is: \n[");
+    printf("The random generated array is:\n");
     for (int i = 0; i < nodes; i++)
     {
         for (int j = 0; j < i+1; j++)
@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
     /* for (int i = 0; i < nodes; i++) */
     /* { */
     /*     if (i == 0) */
-    /*         printf("["); */
+    /*         printf("[["); */
     /*     else */
     /*         printf(" ["); */
     /*     for (int j = 0; j < nodes; j++) */
@@ -56,34 +56,19 @@ int main(int argc, char *argv[]) {
     /*                    Version 3                           */
     /**********************************************************/
 
-    FILE *f;
-    int m, n; // MxN dimensions (square matrix M=N) 
-    uint32_t nz; // nz: number of non zero elements 
-
-    // expecting a filename to read (./main <filename>)
-    if (argc < 2) {
-        printf("Missed command line arguements\n");
-		fprintf(stderr, "Usage: %s [martix-market-filename]\n", argv[0]);
-		exit(1);
-	}
-    else {
-        if ((f = fopen(argv[1], "r")) == NULL) { 
-            printf("Can't open file\n");
-            exit(1);  
-        }
-    }
-
-    // get number of non zero elements
-    if ((mm_read_mtx_crd_size(f, &m, &n, &nz)) !=0)
-        exit(1);
-
     // read MM format
-    f = fopen(argv[1], "r"); // get back on track (due to the above call current line isn't the first)
-    uint32_t *rows, *columns;
-    rows = (uint32_t*) malloc(nz * sizeof(uint32_t));
-    columns = (uint32_t*) malloc(nz * sizeof(uint32_t));
+    uint32_t *rows; 
+    uint32_t *columns; 
+    uint32_t nz = 0; // nz: number of non zero elements 
 
-    mm2coo(f, rows, columns, nz);
+    mm2coo(argc, argv, &rows, &columns, nz);
+
+    printf("Number of nnz: %lu\n", nz);
+    int i, j;
+    for (i=0; i<nz; i++) {
+        //printf("[%lu, %lu]\n", rows[i], columns[i]);
+    }
+    // WARNING: Don't forget to free the memory
 
     // coo2csc
     

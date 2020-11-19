@@ -12,7 +12,7 @@ uint64_t* v3(int*, const uint32_t);
 
 double diff_time(struct timespec, struct timespec);
 
-void mm2coo(FILE *, uint32_t*, uint32_t*, uint32_t);
+void mm2coo(int argc, char* argv[], uint32_t**, uint32_t**, uint32_t&);
 
 void coo2csc(
   uint32_t       * const row,       /*!< CSC row start indices */
