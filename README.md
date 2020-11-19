@@ -60,7 +60,15 @@ Using the CSC storage scheme, implement in `C/C++` the sparse matrix-vector prod
 # Undirected Graph
 ![undirected graph](docs/undirected_graph.png)
 
-# Benchmarking Python versions
-![benchmarking](docs/benchmarking.png)
+# Benchmarking 
+
+C has significantly outperformed Python (even with pypy3)!
+
+## Python
+![benchmarking python](docs/benchmarking_python.png)
+
+## C
+
+![benchmarking c](docs/benchmarking_C.png)
 
 

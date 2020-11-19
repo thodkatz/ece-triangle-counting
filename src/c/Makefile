@@ -1,7 +1,7 @@
 CC=g++
 CFLAGS=-O3 -g
 
-OBJ=main.o v2.o v1.o
+OBJ=main.o v3.o v2.o v1.o diff_time.o
 
 all: main
 	

@@ -4,45 +4,62 @@
 #include<stdint.h>
 #include<time.h>
 
-//uint32_t* count_triangles_v2(int *, const size_t);
-//int* count_triangles_v3();
 void print(uint64_t*, uint32_t);
 
 int main() {
 
-    const uint32_t nodes = 500; 
-    // int adjacency[][nodes] = {{0, 1, 0, 0, 1, 0},
-    //                    {1, 0, 1, 0, 1, 0},
-    //                    {0, 1, 0, 1, 0, 0},
-    //                    {0, 0, 1, 0, 1, 1},
-    //                    {1, 1, 0, 1, 0, 0},
-    //                    {0, 0, 0, 1, 0, 0}};
+    const uint32_t nodes = 1000; // maximum 1430
+    /* int adjacency[][10] ={{0, 0, 0, 1, 1, 0, 0, 0, 1, 1,}, */
+    /*                       {0, 0, 0, 1, 1, 0, 0, 0, 0, 0}, */
+    /*                       {0, 0, 0, 0, 0, 0, 0, 1, 0, 0}, */
+    /*                       {1, 1, 0, 0, 0, 0, 0, 0, 0, 0}, */
+    /*                       {1, 1, 0, 0, 0, 0, 1, 1, 0, 0}, */
+    /*                     1 {0, 0, 0, 0, 0, 0, 1, 0, 0, 1}, */
+    /*                       {0, 0, 0, 0, 1, 1, 0, 1, 1, 1}, */
+    /*                       {0, 0, 1, 0, 1, 0, 1, 0, 0, 0}, */
+    /*                       {1, 0, 0, 0, 0, 0, 1, 0, 0, 0}, */
+    /*                       {1, 0, 0, 0, 0, 1, 1, 0, 0, 0}}; */
 
-    // create a random array
     int adjacency[nodes][nodes] = {0};
+    size_t length = sizeof(adjacency)/sizeof(adjacency[0][0]);
+    printf("The length of the array is %d and the nodes are %d\n", length, nodes);
+
+    // create a random array WARNING: it should be symmetrical. Not just random
     srand(time(NULL));
     printf("The random generated array is: \n[");
     for (int i = 0; i < nodes; i++)
     {
-        //printf("[");
-        for (int j = 0; j < nodes; j++)
+        for (int j = 0; j < i+1; j++)
         {
             adjacency[i][j] = rand()%2;
-            //printf("%d,", adjacency[i][j]);
+            adjacency[j][i] = adjacency[i][j];
+            if (i == j)
+                adjacency[i][i] = 0; // no self loops
         }
-        //printf("],\n");
     }
-    printf("]\n");
     
-    
-    size_t length = sizeof(adjacency)/sizeof(adjacency[0][0]);
-    printf("The length of the array is %d and the nodes are %d\n", length, nodes);
+    // print
+    /* for (int i = 0; i < nodes; i++) */
+    /* { */
+    /*     if (i == 0) */
+    /*         printf("["); */
+    /*     else */
+    /*         printf(" ["); */
+    /*     for (int j = 0; j < nodes; j++) */
+    /*         printf("%d,", adjacency[i][j]); */
+    /*     if (i == nodes -1) */
+    /*         printf("]]\n"); */
+    /*     else */
+    /*         printf("],\n"); */
+    /* } */
 
-    uint64_t *vertices = v2((int *)adjacency, nodes);
+
+
+    uint64_t *vertices = v1((int *)adjacency, nodes);
     //print(vertices, nodes);
     free(vertices);
 
-    vertices = v1((int *)adjacency, nodes);
+    vertices = v2((int *)adjacency, nodes);
     //print(vertices, nodes);
     free(vertices);
 

@@ -6,13 +6,13 @@ import v1
 import v2
 import trace_cube_matrix as trace
 
-G = nx.erdos_renyi_graph(50, 0.35, seed=random.seed(), directed=False)
+G = nx.erdos_renyi_graph(10, 0.35, seed=random.seed(), directed=False)
 adjacency = nx.to_numpy_array(G)
-#print("The adjacency for this test case will be: ")
+print("The adjacency for this test case will be: ")
 print(adjacency)
 
 nx.draw(G)
-plt.savefig("../../docs/undirected_graph.png")
+#plt.savefig("../../docs/undirected_graph.png")
 
 print("\n<----------v1---------->")
 start = time.process_time()
@@ -21,7 +21,7 @@ print("Execution time: ", (time.process_time() - start))
 print("How many times a vertix belong to a triangle?")
 for i in range(len(G)):
     print("The vertice: " + str(i) + " belong to " + str(vertices[i]) + " triangles")
-print("Total numbers of triangles (including permutations): ", count)
+print("Total numbers of triangles (including permutations): ", count/6)
 
 print("\n<----------v2---------->")
 start = time.process_time()
@@ -33,7 +33,7 @@ for i in range(len(G)):
 print("Total number of triangles: ", count)
 
 print("\n<----------GeeksForGeeks trace method---------->")
-trace.V = 50 # number of nodes
+trace.V = 10 # number of nodes
 start = time.process_time()
 count = trace.triangleInGraph(adjacency)
 print("Execution time: ", (time.process_time() - start))
@@ -46,3 +46,5 @@ print("Execution time: ", (time.process_time() - start))
 print("Total number of triangles: ", numTriangles)
 print("How many times a vertix belong to a triangle?")
 print(nx.triangles(G))
+
+
