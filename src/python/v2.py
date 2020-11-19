@@ -3,8 +3,8 @@ def countTriangles (adjacency):
     vertices = [0] * length 
     count = 0
 
-    for i in range(length):
-        for j in range(i+1, length): # --> for j in range(length) will result to take into acvertices 3 times one triangle
+    for i in range(length-2):
+        for j in range(i+1, length-1): # --> for j in range(length) will result to take into acvertices 3 times one triangle
             for k in range(j+1,length): # --> for k in range(length) will result to take into acvertices 2 times one triangle
                 if (adjacency[i][j] == 1 and adjacency[j][k] == 1 and adjacency[k][i] == 1):
                     vertices[i] += 1

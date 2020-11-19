@@ -1,25 +1,15 @@
-#include"main.h"
-#include<stdlib.h>
-#include<stdio.h>
-#include<stdint.h>
-#include<time.h>
+#include "include/main.h"
+#include "include/mmio.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <stdint.h>
+#include <time.h>
 
-void print(uint64_t*, uint32_t);
+void print_vertix(uint64_t*, uint32_t);
 
-int main() {
+int main(int argc, char *argv[]) {
 
-    const uint32_t nodes = 1000; // maximum 1430
-    /* int adjacency[][10] ={{0, 0, 0, 1, 1, 0, 0, 0, 1, 1,}, */
-    /*                       {0, 0, 0, 1, 1, 0, 0, 0, 0, 0}, */
-    /*                       {0, 0, 0, 0, 0, 0, 0, 1, 0, 0}, */
-    /*                       {1, 1, 0, 0, 0, 0, 0, 0, 0, 0}, */
-    /*                       {1, 1, 0, 0, 0, 0, 1, 1, 0, 0}, */
-    /*                     1 {0, 0, 0, 0, 0, 0, 1, 0, 0, 1}, */
-    /*                       {0, 0, 0, 0, 1, 1, 0, 1, 1, 1}, */
-    /*                       {0, 0, 1, 0, 1, 0, 1, 0, 0, 0}, */
-    /*                       {1, 0, 0, 0, 0, 0, 1, 0, 0, 0}, */
-    /*                       {1, 0, 0, 0, 0, 1, 1, 0, 0, 0}}; */
-
+    const uint32_t nodes = 100; // maximum 1430
     int adjacency[nodes][nodes] = {0};
     size_t length = sizeof(adjacency)/sizeof(adjacency[0][0]);
     printf("The length of the array is %d and the nodes are %d\n", length, nodes);
@@ -54,7 +44,6 @@ int main() {
     /* } */
 
 
-
     uint64_t *vertices = v1((int *)adjacency, nodes);
     //print(vertices, nodes);
     free(vertices);
@@ -63,16 +52,50 @@ int main() {
     //print(vertices, nodes);
     free(vertices);
 
+    /**********************************************************/
+    /*                    Version 3                           */
+    /**********************************************************/
+
+    FILE *f;
+    int m, n; // MxN dimensions (square matrix M=N) 
+    uint32_t nz; // nz: number of non zero elements 
+
+    // expecting a filename to read (./main <filename>)
+    if (argc < 2) {
+        printf("Missed command line arguements\n");
+		fprintf(stderr, "Usage: %s [martix-market-filename]\n", argv[0]);
+		exit(1);
+	}
+    else {
+        if ((f = fopen(argv[1], "r")) == NULL) { 
+            printf("Can't open file\n");
+            exit(1);  
+        }
+    }
+
+    // get number of non zero elements
+    if ((mm_read_mtx_crd_size(f, &m, &n, &nz)) !=0)
+        exit(1);
+
+    // read MM format
+    f = fopen(argv[1], "r"); // get back on track (due to the above call current line isn't the first)
+    uint32_t *rows, *columns;
+    rows = (uint32_t*) malloc(nz * sizeof(uint32_t));
+    columns = (uint32_t*) malloc(nz * sizeof(uint32_t));
+
+    mm2coo(f, rows, columns, nz);
+
+    // coo2csc
+    
+    
+
+    // call version 3
+
     return 0;
 }
 
-void print(uint64_t *array, uint32_t nodes) {
+void print_vertix(uint64_t *array, uint32_t nodes) {
     for (int i = 0; i<nodes; i++) {
         printf("The %d node is participating in %d triangles\n", i, array[i]);
     }
 }
-
-
-/* int* count_triangles_v3 () { */
-/*     // from csc to adjacency? Of course not because the point is to use csc for large data */
-/* } */

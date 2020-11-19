@@ -1,8 +1,8 @@
-#include"main.h"
-#include<time.h>
-#include<stdint.h>
-#include<stdio.h>
-#include<stdlib.h>
+#include "include/main.h"
+#include <time.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 
 
@@ -32,9 +32,10 @@ uint64_t* v1(int *adjacency, const uint32_t nodes) {
     printf("Toc: %ld seconds and %ld nanoseconds\n", toc.tv_sec, toc.tv_nsec);
     double diff = diff_time(tic, toc);
     printf("Time elapsed (seconds): %0.6f\n", diff);
-    printf("Total triangles: %d\n", count);
+    printf("Total triangles: %d\n", count/6);
 
-    return vertices;
+    return vertices; // Note: consider to free the allocated memory
+
 }
 
 

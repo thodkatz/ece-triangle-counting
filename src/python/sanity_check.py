@@ -6,7 +6,7 @@ import v1
 import v2
 import trace_cube_matrix as trace
 
-G = nx.erdos_renyi_graph(10, 0.35, seed=random.seed(), directed=False)
+G = nx.erdos_renyi_graph(100, 0.35, seed=random.seed(), directed=False)
 adjacency = nx.to_numpy_array(G)
 print("The adjacency for this test case will be: ")
 print(adjacency)
