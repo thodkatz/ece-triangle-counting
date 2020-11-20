@@ -1,4 +1,3 @@
-//#include "include/mmio.h"
 #include "include/main.h"
 #include "include/mmio.h"
 #include <stdio.h>
@@ -10,10 +9,10 @@
  *
  * Convert Matrix Market format to COO
  */
-void mm2coo(int argc, char *argv[], uint32_t **rows, uint32_t **columns, uint32_t &nz) {
+void mm2coo(int argc, char *argv[], uint32_t **rows, uint32_t **columns, uint32_t &nnz, uint32_t &n) {
     MM_typecode matcode;
     FILE *f;
-    int m, n; // MxN dimensions (square matrix M=N) 
+    uint32_t r, c; // MxN dimensions (square matrix M=N) 
     // double *val; // dont need this. Our matrices are binary 1 or zero
 
     // expecting a filename to read (./main <filename>)
@@ -43,14 +42,16 @@ void mm2coo(int argc, char *argv[], uint32_t **rows, uint32_t **columns, uint32_
     }
 
     /* find out size of sparse matrix .... */
-    if ((mm_read_mtx_crd_size(f, &m, &n, &nz)) !=0) exit(1);
-    printf("Number of nnz: %lu\n", nz);
+    if ((mm_read_mtx_crd_size(f, &r, &c, &nnz)) !=0) exit(1);
+    printf("Number of nnz: %lu\n", nnz);
+    n = r;
+    printf("Rows/columns: %lu\n", n);
 
-    *rows = (uint32_t*) calloc(nz, sizeof(uint32_t));
-    *columns = (uint32_t*) calloc(nz, sizeof(uint32_t));
+    *rows = (uint32_t*) calloc(nnz, sizeof(uint32_t));
+    *columns = (uint32_t*) calloc(nnz, sizeof(uint32_t));
 
     int i;
-    for (i=0; i<nz; i++) {
+    for (i=0; i<nnz; i++) {
         fscanf(f, "%lu %lu\n", &((*rows)[i]), &((*columns)[i]));
         (*rows)[i]--;  /* adjust from 1-based to 0-based */
         (*columns)[i]--;

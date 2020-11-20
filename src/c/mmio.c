@@ -20,7 +20,7 @@ int mm_read_unsymmetric_sparse(const char *fname, int *M_, int *N_, int *nz_,
 {
     FILE *f;
     MM_typecode matcode;
-    int M, N;
+    uint32_t M, N;
     uint32_t nz;
     int i;
     double *val;
@@ -188,7 +188,7 @@ int mm_write_mtx_crd_size(FILE *f, int M, int N, int nz)
         return 0;
 }
 
-int mm_read_mtx_crd_size(FILE *f, int *M, int *N, uint32_t *nz )
+int mm_read_mtx_crd_size(FILE *f, uint32_t *M, uint32_t *N, uint32_t *nz )
 {
     char line[MM_MAX_LINE_LENGTH];
     int num_items_read;
@@ -204,13 +204,13 @@ int mm_read_mtx_crd_size(FILE *f, int *M, int *N, uint32_t *nz )
     }while (line[0] == '%');
 
     /* line[] is either blank or has M,N, nz */
-    if (sscanf(line, "%d %d %lu", M, N, nz) == 3)
+    if (sscanf(line, "%lu %lu %lu", M, N, nz) == 3)
         return 0;
         
     else
     do
     { 
-        num_items_read = fscanf(f, "%d %d %d", M, N, nz); 
+        num_items_read = fscanf(f, "%lu %lu %lu", M, N, nz); 
         if (num_items_read == EOF) return MM_PREMATURE_EOF;
     }
     while (num_items_read != 3);
@@ -332,7 +332,7 @@ int mm_read_mtx_crd_entry(FILE *f, int *I, int *J,
                             (nz pairs of real/imaginary values)
 ************************************************************************/
 
-int mm_read_mtx_crd(char *fname, int *M, int *N, uint32_t *nz, int **I, int **J, 
+int mm_read_mtx_crd(char *fname, uint32_t *M, uint32_t *N, uint32_t *nz, int **I, int **J, 
         double **val, MM_typecode *matcode)
 {
     int ret_code;

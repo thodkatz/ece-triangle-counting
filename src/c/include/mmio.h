@@ -20,7 +20,7 @@ typedef char MM_typecode[4];
 char *mm_typecode_to_str(MM_typecode matcode);
 
 int mm_read_banner(FILE *f, MM_typecode *matcode);
-int mm_read_mtx_crd_size(FILE *f, int *M, int *N, uint32_t *nz);
+int mm_read_mtx_crd_size(FILE *f, uint32_t *M, uint32_t *N, uint32_t *nz);
 int mm_read_mtx_array_size(FILE *f, int *M, int *N);
 
 int mm_write_banner(FILE *f, MM_typecode matcode);

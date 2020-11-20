@@ -4,17 +4,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
-
 uint64_t* v1(int *adjacency, const uint32_t nodes) {
     printf("----------Version 1 is called----------\n");
     uint64_t *vertices = (uint64_t *)calloc(nodes, sizeof(uint64_t));
-    int count = 0;
+    uint64_t count = 0;
 
     struct timespec tic;
     struct timespec toc;
     clock_gettime(CLOCK_MONOTONIC, &tic);
-    printf("Tic: %ld seconds and %ld nanoseconds\n", tic.tv_sec, tic.tv_nsec);
+    printf("Tic: %lu seconds and %lu nanoseconds\n", tic.tv_sec, tic.tv_nsec);
     int i, j, k;
     for (i=0;i<nodes;i++){
         for (j=0;j<nodes;j++) {
@@ -29,10 +27,10 @@ uint64_t* v1(int *adjacency, const uint32_t nodes) {
         }
     }
     clock_gettime(CLOCK_MONOTONIC, &toc);
-    printf("Toc: %ld seconds and %ld nanoseconds\n", toc.tv_sec, toc.tv_nsec);
+    printf("Toc: %lu seconds and %lu nanoseconds\n", toc.tv_sec, toc.tv_nsec);
     double diff = diff_time(tic, toc);
     printf("Time elapsed (seconds): %0.6f\n", diff);
-    printf("Total triangles: %d\n", count/6);
+    printf("Total triangles: %lu\n", count/6);
 
     return vertices; // Note: consider to free the allocated memory
 
