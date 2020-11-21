@@ -15,51 +15,68 @@ int main(int argc, char *argv[]) {
     /*                  Version 1 and 2                       */
     /**********************************************************/
 
-    const uint32_t nodes = 50; // maximum 1430
-    int adjacency[nodes][nodes] = {0};
-    size_t length = sizeof(adjacency)/sizeof(adjacency[0][0]);
-    printf("The length of the array is %d and the nodes are %d\n", length, nodes);
+    const uint32_t nodes = 6; // maximum 1430
+    //int adjacency[nodes][nodes] = {0};
+    //size_t length = sizeof(adjacency)/sizeof(adjacency[0][0]);
+    //printf("The length of the array is %d and the nodes are %d\n", length, nodes);
 
-    // create a random array WARNING: it should be symmetrical. Not just random
-    srand(time(NULL));
-    printf("The random generated array is:\n");
-    for (int i = 0; i < nodes; i++)
-    {
-        for (int j = 0; j < i+1; j++)
-        {
-            adjacency[i][j] = rand()%2;
-            adjacency[j][i] = adjacency[i][j];
-            if (i == j)
-                adjacency[i][i] = 0; // no self loops
+    int adjacency[nodes][nodes] = {{0, 0, 0, 1, 1, 1},
+                               {0, 0, 1, 0, 0, 1},
+                               {0, 1, 0, 1, 1, 0},
+                               {1, 0, 1, 0, 1, 0},
+                               {1, 0, 1, 1, 0, 1},
+                               {1, 1, 0, 0, 1, 0}};
+
+    // get only the down half of a symmetrical array
+    for(int i = 0; i < nodes; i++) {
+        for (int j = 0; j < nodes; j++) {
+            if(i<j) adjacency[i][j] = 0;
         }
     }
-    
+
+
+    // create a random array WARNING: it should be symmetrical. Not just random
+    /* srand(time(NULL)); */
+    /* printf("The random generated array is:\n"); */
     /* for (int i = 0; i < nodes; i++) */
     /* { */
-    /*     if (i == 0) */
-    /*         printf("[["); */
-    /*     else */
-    /*         printf(" ["); */
-    /*     for (int j = 0; j < nodes; j++) */
-    /*         printf("%d,", adjacency[i][j]); */
-    /*     if (i == nodes -1) */
-    /*         printf("]]\n"); */
-    /*     else */
-    /*         printf("],\n"); */
+    /*     for (int j = 0; j < i+1; j++) */
+    /*     { */
+    /*         adjacency[i][j] = rand()%2; */
+    /*         adjacency[j][i] = adjacency[i][j]; */
+    /*         if (i == j) */
+    /*             adjacency[i][i] = 0; // no self loops */
+    /*     } */
     /* } */
+    
+    for (int i = 0; i < nodes; i++)
+    {
+        if (i == 0)
+            printf("[[");
+        else
+            printf(" [");
+        for (int j = 0; j < nodes; j++)
+            printf("%d,", adjacency[i][j]);
+        if (i == nodes -1)
+            printf("]]\n");
+        else
+            printf("],\n");
+    }
 
 
     vertices = v1((int *)adjacency, nodes);
-    //print(vertices, nodes);
+    //print_vertix(vertices, nodes);
     free(vertices);
 
     vertices = v2((int *)adjacency, nodes);
-    //print(vertices, nodes);
+    //print_vertix(vertices, nodes);
     free(vertices);
 
     /**********************************************************/
     /*                    Version 3                           */
     /**********************************************************/
+
+    printf("\n----------Version 3 Prerequisites----------\n");
 
     // Matrix Market format to COO
     uint32_t *coo_row; 
@@ -78,14 +95,32 @@ int main(int argc, char *argv[]) {
     }
 
     // COO format to CSC
+    // testing stuff
+    nnz = 9;
+    n = 6;
     uint32_t *csc_row = (uint32_t*)malloc(nnz * sizeof(uint32_t)); 
     uint32_t *csc_col = (uint32_t*)malloc((n+1) * sizeof(uint32_t)); 
     uint32_t isOneBased = 0; // COO is zero based
     
-    coo2csc(csc_row, csc_col, coo_row, coo_col, nnz, n, isOneBased);
+    uint32_t coo_col_test[9] = {0, 0, 0, 1, 1, 2, 2, 3, 4};
+    uint32_t coo_row_test[9] = {3, 4, 5, 2, 5, 3, 4, 4, 5};
+    coo2csc(csc_row, csc_col, coo_row_test, coo_col_test, nnz, n, 0);
+    int rr, cc;
+    printf("csr: ");
+    for (rr=0; rr<nnz; rr++) {
+        printf("%ld, ", csc_row[rr]);
+    }
+    printf("csc: ");
+    for (cc=0; cc<(n+1); cc++) {
+        printf("%ld, ", csc_col[cc]);
+    }
+    printf("\n");
+
     
     // call version 3
-    uint64_t count = v3(csc_row, csc_col, nnz, n);
+    vertices = v3((uint32_t*)csc_row, (uint32_t*)csc_col, nnz, n);
+    print_vertix(vertices, nodes);
+    free(vertices);
 
     // free space
     free(csc_row);
@@ -98,6 +133,6 @@ int main(int argc, char *argv[]) {
 
 void print_vertix(uint64_t *array, uint32_t nodes) {
     for (int i = 0; i<nodes; i++) {
-        printf("The %d node is participating in %d triangles\n", i, array[i]);
+        printf("The %d node is participating in %lu triangles\n", i, array[i]);
     }
 }

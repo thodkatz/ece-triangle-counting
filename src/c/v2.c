@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 uint64_t* v2(int *adjacency, const uint32_t nodes) {
-    printf("----------Version 2 is called----------\n");
+    printf("\n----------Version 2 is called----------\n");
     uint64_t *vertices = (uint64_t *)calloc(nodes, sizeof(uint64_t));
     uint64_t count = 0;
 
