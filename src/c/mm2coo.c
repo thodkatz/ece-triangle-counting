@@ -43,16 +43,16 @@ void mm2coo(int argc, char *argv[], uint32_t **rows, uint32_t **columns, uint32_
 
     /* find out size of sparse matrix .... */
     if ((mm_read_mtx_crd_size(f, &r, &c, &nnz)) !=0) exit(1);
-    printf("Number of nnz: %lu\n", nnz);
+    printf("Number of nnz: %u\n", nnz);
     n = r;
-    printf("Rows/columns: %lu\n", n);
+    printf("Rows/columns: %u\n", n);
 
     *rows = (uint32_t*) calloc(nnz, sizeof(uint32_t));
     *columns = (uint32_t*) calloc(nnz, sizeof(uint32_t));
 
     int i;
     for (i=0; i<nnz; i++) {
-        fscanf(f, "%lu %lu\n", &((*rows)[i]), &((*columns)[i]));
+        fscanf(f, "%u %u\n", &((*rows)[i]), &((*columns)[i]));
         (*rows)[i]--;  /* adjust from 1-based to 0-based */
         (*columns)[i]--;
         //printf("Elements: [%lu, %lu]\n", rows[i], columns[i]);

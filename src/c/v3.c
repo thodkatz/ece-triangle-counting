@@ -14,7 +14,7 @@ uint64_t* v3(uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, const uin
     uint32_t diffc = 0;
     uint32_t diffr = 0;
     for(uint32_t start=0; start<(nnz-2);start++) {
-        printf("Current nz: %ld\n", start); // be sure that it is still running in large graphs
+        printf("Current nz: %lu\n", start); // be sure that it is still running in large graphs
         diffc = csc_col[j+1] - csc_col[j]; // get the numbers of elements in the ith column    
         diffr = csc_col[j+1] - start - 1;
 

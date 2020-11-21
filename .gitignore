@@ -4,3 +4,4 @@ __pycache__/
 *.o
 main
 sandbox/
+matrices_collection/
