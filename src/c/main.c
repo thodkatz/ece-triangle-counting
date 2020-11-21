@@ -18,7 +18,7 @@ int main(int argc, char *argv[]) {
     const uint32_t nodes = 6; // maximum 1430
     int adjacency[nodes][nodes] = {0};
     size_t length = sizeof(adjacency)/sizeof(adjacency[0][0]);
-    printf("The length of the array is %d and the nodes are %d\n", length, nodes);
+    printf("The length of the array is %lu and the nodes are %u\n", length, nodes);
 
     /* int adjacency[nodes][nodes] = {{0, 0, 0, 1, 1, 1}, */
     /*                            {0, 0, 1, 0, 0, 1}, */
@@ -86,8 +86,8 @@ int main(int argc, char *argv[]) {
 
     mm2coo(argc, argv, &coo_row, &coo_col, nnz, n);
 
-    printf("Number of nnz: %lu\n", nnz, n);
-    printf("Rows/columns: %lu\n", n);
+    printf("Number of nnz: %u\n", nnz, n);
+    printf("Rows/columns: %u\n", n);
 
     int i, j;
     for (i=0; i<nnz; i++) {

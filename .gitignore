@@ -5,3 +5,4 @@ __pycache__/
 main
 sandbox/
 matrices_collection/
+*.txt

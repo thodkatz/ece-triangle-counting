@@ -1,29 +1,49 @@
 #include "include/main.h"
+#include <time.h>
 
 extern void print_vertix(uint64_t *array, uint32_t nodes);
 /*
+ * Counting triangles: The concept is, given a csc format from a down half symmetric matrix, to counte all the possible triangles.
+ * One criteria to follow to be sure that you count properly without permuations is the rule: i<j<k following edges. In our test case
+ * matrices are symmetrical so you can think this problem given a csr format. So, in this function we are trying first to find two
+ * potential points of a triangle in a row e.g. a[i][j] and a[i][k]. The elements in a csr format are scanned by row in a snake way. So 
+ * it is convenient for a given row to check the elemets right of the current in the ith row. Now that we have spotted a[i][j] and a[i][k],
+ * find the jth row and iteratevthe elements by columns. Is there a[j][k]? Then you find a triangle. Still the rule is applied i<j<k.
+ *
+ * Notes:
+ * Key elemets are: 1) The compressed array in the ith element indicates how many nnz have passed until (including) the ith-1 row. 
+ *                  2) Substracting the values of index (i+1) and i, will result to the number of nnz in the ith row.
+ * In the same way the above can be applied to a csc scheme mindset
+ *
  * nnz: Number of non zero elements (half of the total because matrix symmetric)
  * n: Rows/columns 
  */
+
 uint64_t* v3(uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, const uint32_t n) {
     printf("\n----------Version 3 is called----------\n");
     uint64_t* vertices = (uint64_t*)calloc(n, sizeof(uint64_t));
     uint64_t count = 0;
 
+    struct timespec tic;
+    struct timespec toc;
+    clock_gettime(CLOCK_MONOTONIC, &tic);
+    printf("Tic: %lu seconds and %lu nanoseconds\n", tic.tv_sec, tic.tv_nsec);
+
     uint32_t j = 0;
     uint32_t diffc = 0;
     uint32_t diffr = 0;
-    for(uint32_t start=0; start<(nnz-2);start++) {
-        printf("Current nz: %lu\n", start); // be sure that it is still running in large graphs
-        diffc = csc_col[j+1] - csc_col[j]; // get the numbers of elements in the ith column    
-        diffr = csc_col[j+1] - start - 1;
 
-        while(diffc == 0) {
+    for(uint32_t start=0; start<(nnz-2);start++) {
+        //printf("Current nz: %u\n", start); // be sure that it is still running in large graphs
+        diffc = csc_col[j+1] - csc_col[j]; // get the numbers of elements in the ith column    
+        diffr = csc_col[j+1] - start - 1; // get the remaining elements per column
+
+        while(diffc == 0) { // Is there any element to work with?
             j++;
             diffc = csc_col[j+1] - csc_col[j];
         }
 
-        if (diffc == 1 || diffr == 0) {
+        if (diffc == 1 || diffr == 0) { // 1) At least two elements are needed in a column, 2) Did we iterate all the elements in a given column? 
             j++; 
             continue;
         }
@@ -43,6 +63,11 @@ uint64_t* v3(uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, const uin
             }
         }
     }
+
+    clock_gettime(CLOCK_MONOTONIC, &toc);
+    printf("Toc: %lu seconds and %lu nanoseconds\n", toc.tv_sec, toc.tv_nsec);
+    double diff = diff_time(tic, toc);
+    printf("Time elapsed (seconds): %0.6f\n", diff);
 
     printf("Total triangles: %lu\n", count);
 
