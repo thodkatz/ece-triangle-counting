@@ -4,6 +4,9 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <time.h>
+#include <cilk/cilk.h>
+#include <cilk/cilk_api.h>
+//#include "include/cilk_api.h""
 
 void print_vertix(uint64_t*, uint32_t);
 uint64_t *vertices;
@@ -120,7 +123,11 @@ int main(int argc, char *argv[]) {
     
     // call version 3
     vertices = v3((uint32_t*)csc_row, (uint32_t*)csc_col, nnz, n);
-    print_vertix(vertices, n);
+    //print_vertix(vertices, n);
+    free(vertices);
+
+    vertices = v3_cilk((uint32_t*)csc_row, (uint32_t*)csc_col, nnz, n);
+    //print_vertix(vertices, n);
     free(vertices);
 
     // free space

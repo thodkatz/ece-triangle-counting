@@ -78,8 +78,9 @@ plt.show()
 #    ratio.append(t_v1/t_v2)
 #    print(n)
 
+# Tweak spacing to prevent clipping of ylabel
+# plt.subplots_adjust(left=0.15)#plt.rc('text', usetex=True)
 
-#plt.rc('text', usetex=True)
 #plt.subplot(2,1,1)
 #plt.title("Benchmarking v1 and v2")
 ##plt.xlabel('Number of nodes', fontsize=12)

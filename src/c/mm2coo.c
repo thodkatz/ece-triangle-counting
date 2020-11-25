@@ -47,8 +47,8 @@ void mm2coo(int argc, char *argv[], uint32_t **rows, uint32_t **columns, uint32_
     n = r;
     printf("Rows/columns: %u\n", n);
 
-    *rows = (uint32_t*) calloc(nnz, sizeof(uint32_t));
-    *columns = (uint32_t*) calloc(nnz, sizeof(uint32_t));
+    *rows = (uint32_t*) malloc(nnz * sizeof(uint32_t));
+    *columns = (uint32_t*) malloc(nnz * sizeof(uint32_t));
 
     int i;
     for (i=0; i<nnz; i++) {
@@ -61,7 +61,7 @@ void mm2coo(int argc, char *argv[], uint32_t **rows, uint32_t **columns, uint32_
 
     if (f !=stdin) {
         fclose(f);
-        printf("File is closed\n");
+        printf("File is successfully closed\n");
     }
 }
 

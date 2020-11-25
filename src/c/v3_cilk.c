@@ -1,7 +1,9 @@
 #include "include/main.h"
 #include <time.h>
+#include <cilk/cilk.h>
+#include <cilk/cilk_api.h>
+//#include "include/cilk_api.h"
 
-extern void print_vertix(uint64_t *array, uint32_t nodes);
 /*
  * Counting triangles: The concept is, given a csc format from a down half symmetric matrix, to counte all the possible triangles.
  * One criteria to follow to be sure that you count properly without permuations is the rule: i<j<k following edges. In our test case
@@ -19,8 +21,11 @@ extern void print_vertix(uint64_t *array, uint32_t nodes);
  * n: Rows/columns 
  */
 
-uint64_t* v3(uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, const uint32_t n) {
-    printf("\n----------Version 3 is called----------\n");
+uint64_t* v3_cilk(uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, const uint32_t n) {
+    printf("\n----------Version 3 Cilk is called----------\n");
+
+
+
     uint64_t* vertices = (uint64_t*)malloc(n * sizeof(uint64_t));
     uint64_t count = 0;
 
@@ -33,7 +38,14 @@ uint64_t* v3(uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, const uin
     uint32_t diffc = 0;
     uint32_t diffr = 0;
 
-    for(uint32_t start=0; start<(nnz-2);start++) {
+
+    int numWorkers = __cilkrts_get_nworkers();
+    printf("Numbers of workers: %d\n", numWorkers);
+    
+    cilk_for (uint32_t start = 0; start < nnz-2; start++) {
+        int currWorker = __cilkrts_get_worker_number();
+        //printf("The number of worker is: %d\n", currWorker);
+
         //printf("Current nz: %u\n", start); // be sure that it is still running in large graphs
         diffc = csc_col[j+1] - csc_col[j]; // get the numbers of elements in the ith column    
         diffr = csc_col[j+1] - start - 1; // get the remaining elements per column
@@ -51,15 +63,13 @@ uint64_t* v3(uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, const uin
         if ((csc_col[csc_row[start] + 1] - csc_col[csc_row[start]]) == 0) continue; // if there are no elements in the csc_row[start] then skip
         if (j == csc_row[start]) continue; // ignore elements in the diagonal
 
-        uint32_t m, k = 0;
-        for(m = start + 1; m<csc_col[j+1]; m++) {
-            for(k = csc_col[csc_row[start]]; k < csc_col[csc_row[start] + 1]; k++) { // find the start with id: csc_row[start] and iterate over its elements
+        for (uint32_t m = start + 1; m<csc_col[j+1]; m++) {
+            for (uint32_t k = csc_col[csc_row[start]]; k < csc_col[csc_row[start] + 1]; k++) { // find the start with id: csc_row[start] and iterate over its elements
                 if (csc_row[k] == csc_row[m]) {
                     vertices[j]++;
                     vertices[csc_row[start]]++;
                     vertices[csc_row[k]]++;
                     count++;
-                    break;
                 }
             }
         }
