@@ -6,7 +6,7 @@ OBJ=v3.o v2.o v1.o diff_time.o coo2csc.o
 
 all: main
 	
-main: $(OBJ) mmio.o mm2coo.o main.o
+main: $(OBJ) mmio.o mm2coo.o main.o  v3_cilk.o v3_pre_cilk.o
 	$(CC) $(CFLAGS) $^ -o $@ 
 	rm -r *.o
 
@@ -16,7 +16,7 @@ mm2coo.o: include/main.h include/mmio.h
 mmio.o: include/mmio.h
 
 cilk: 
-	$(CILKCC) $(CFLAGS) *.c -o main -fcilkplus -fsanitize=cilk
+	$(CC) -O3 *.c -o main -fcilkplus #-fsanitize=cilk #-O3
 
 .PHONY: clean
 

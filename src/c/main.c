@@ -6,7 +6,16 @@
 #include <time.h>
 #include <cilk/cilk.h>
 #include <cilk/cilk_api.h>
+#include <cilk/reducer_opadd.h>
 //#include "include/cilk_api.h""
+
+/*
+ * MODE =
+ * 1 --> cilk
+ * 2 --> openmp
+ * 3 --> pthreads
+ */
+#define MODE 1
 
 void print_vertix(uint64_t*, uint32_t);
 uint64_t *vertices;
@@ -99,36 +108,28 @@ int main(int argc, char *argv[]) {
 
     // COO format to CSC
    
-    // testing stuff
-    //nnz = 9;
-    //n = 6;
     uint32_t *csc_row = (uint32_t*)malloc(nnz * sizeof(uint32_t)); 
     uint32_t *csc_col = (uint32_t*)malloc((n+1) * sizeof(uint32_t)); 
     uint32_t isOneBased = 0; // COO is zero based
     
-    //uint32_t coo_col_test[9] = {0, 0, 0, 1, 1, 2, 2, 3, 4};
-    //uint32_t coo_row_test[9] = {3, 4, 5, 2, 5, 3, 4, 4, 5};
     coo2csc(csc_row, csc_col, coo_row, coo_col, nnz, n, 0);
-    /* int rr, cc; */
-    /* printf("csr: "); */
-    /* for (rr=0; rr<nnz; rr++) { */
-    /*     printf("%ld, ", csc_row[rr]); */
-    /* } */
-    /* printf("csc: "); */
-    /* for (cc=0; cc<(n+1); cc++) { */
-    /*     printf("%ld, ", csc_col[cc]); */
-    /* } */
-    /* printf("\n"); */
-
     
     // call version 3
     vertices = v3((uint32_t*)csc_row, (uint32_t*)csc_col, nnz, n);
     //print_vertix(vertices, n);
     free(vertices);
 
+    
+#if MODE == 1
     vertices = v3_cilk((uint32_t*)csc_row, (uint32_t*)csc_col, nnz, n);
     //print_vertix(vertices, n);
     free(vertices);
+#endif
+
+    // v3 alternative to unfold parallelism
+    //vertices = v3_pre_cilk((uint32_t*)csc_row, (uint32_t*)csc_col, nnz, n);
+    //print_vertix(vertices, n);
+    //free(vertices);
 
     // free space
     free(csc_row);

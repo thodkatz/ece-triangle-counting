@@ -10,6 +10,7 @@ uint64_t* v1(int*, const uint32_t);
 uint64_t* v2(int*, const uint32_t);
 uint64_t* v3(uint32_t*, uint32_t*, const uint32_t, const uint32_t);
 uint64_t* v3_cilk(uint32_t*, uint32_t*, const uint32_t, const uint32_t);
+uint64_t* v3_pre_cilk(uint32_t*, uint32_t*, const uint32_t, const uint32_t);
 
 double diff_time(struct timespec, struct timespec);
 
