@@ -46,9 +46,9 @@ uint64_t* v3_cilk(uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, cons
     //printf("Current worker: %d\n", currWorker);
 
     cilk::reducer_opadd<unsigned int> cilk_count;
-    //cilk::reducer<op_list_append<int> > indeces;
-    std::list<unsigned int> indeces;
-    std::list<unsigned int>::iterator it;
+    cilk::reducer_list_append<unsigned int> cilk_list;
+    std::list<unsigned int> indeces; // wont work in parallel
+    //std::list<unsigned int>::iterator it;
 
 
     cilk_for (uint32_t i = 0; i < n; i++) {
@@ -59,20 +59,27 @@ uint64_t* v3_cilk(uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, cons
                         //vertices[i]++;
                         //vertices[csc_row[m]]++;
                         //vertices[csc_row[p]]++;
-                        //count++;
+                        count++;
 
                         // how to keep track of the indeces? Are lists parallel safe? No check and act though
-                        indeces.push_back(i);
-                        indeces.push_back(csc_row[m]);
-                        indeces.push_back(csc_row[p]);
+                        // eventually stl lists wont work. Use reducers
+                        cilk_list->push_back(i);
+                        cilk_list->push_back(csc_row[m]);
+                        cilk_list->push_back(csc_row[p]);
                         cilk_count++;
                     }
                 }
             }
         }
     }
-    for(it=indeces.begin(); it!=indeces.end(); ++it)
-        vertices[*it]++;
+    indeces = cilk_list.get_value() ;
+    for (std::list<unsigned int>::iterator i = indeces.begin(); i != indeces.end(); i++) {
+        vertices[*i]++;
+    }
+
+
+
+    // the total numbers of triangle is the length of the list divided by three
 
 
     clock_gettime(CLOCK_MONOTONIC, &toc);
@@ -82,6 +89,7 @@ uint64_t* v3_cilk(uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, cons
 
     printf("Total triangles (race bug): %lu\n", count);
     printf("Total triangles using cilk: %u\n", cilk_count.get_value()); 
+    printf("Total triangles using cilk: %u\n", indeces.size()/3); 
 
     return vertices;
 }
