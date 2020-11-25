@@ -116,13 +116,13 @@ int main(int argc, char *argv[]) {
     
     // call version 3
     vertices = v3((uint32_t*)csc_row, (uint32_t*)csc_col, nnz, n);
-    //print_vertix(vertices, n);
+    print_vertix(vertices, n);
     free(vertices);
 
     
 #if MODE == 1
     vertices = v3_cilk((uint32_t*)csc_row, (uint32_t*)csc_col, nnz, n);
-    //print_vertix(vertices, n);
+    print_vertix(vertices, n);
     free(vertices);
 #endif
 

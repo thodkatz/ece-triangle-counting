@@ -16,7 +16,7 @@ mm2coo.o: include/main.h include/mmio.h
 mmio.o: include/mmio.h
 
 cilk: 
-	$(CC) -O3 *.c -o main -fcilkplus #-fsanitize=cilk #-O3
+	$(CC) -O3 *.c -o main -fcilkplus #-fsanitize=cilk #-Og
 
 .PHONY: clean
 

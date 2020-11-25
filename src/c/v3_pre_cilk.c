@@ -27,7 +27,7 @@ uint64_t* v3_pre_cilk(uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, 
 
 
 
-    uint64_t* vertices = (uint64_t*)malloc(n * sizeof(uint64_t));
+    uint64_t* vertices = (uint64_t*)calloc(n, sizeof(uint64_t));
     uint64_t count = 0;
 
     struct timespec tic;

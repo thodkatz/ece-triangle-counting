@@ -21,7 +21,7 @@ extern void print_vertix(uint64_t *array, uint32_t nodes);
 
 uint64_t* v3(uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, const uint32_t n) {
     printf("\n----------Version 3 is called----------\n");
-    uint64_t* vertices = (uint64_t*)malloc(n * sizeof(uint64_t));
+    uint64_t* vertices = (uint64_t*)calloc(n, sizeof(uint64_t));
     uint64_t count = 0;
 
     struct timespec tic;

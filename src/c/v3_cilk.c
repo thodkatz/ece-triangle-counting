@@ -4,9 +4,10 @@
 #include <cilk/cilk_api.h>
 #include <cilk/reducer_opadd.h>
 #include <cilk/reducer_string.h>
-#include <iostream>
+#include <cilk/reducer_list.h>
 #include <pthread.h> //pthread library
 //#include "include/cilk_api.h"
+#include <list>
 
 /*
  * Counting triangles: The concept is, given a csc format from a down half symmetric matrix, to counte all the possible triangles.
@@ -30,7 +31,7 @@ uint64_t* v3_cilk(uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, cons
 
 
 
-    uint64_t* vertices = (uint64_t*)malloc(n * sizeof(uint64_t));
+    uint64_t* vertices = (uint64_t*)calloc(n, sizeof(uint64_t));
     uint64_t count = 0;
 
     struct timespec tic;
@@ -38,51 +39,41 @@ uint64_t* v3_cilk(uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, cons
     clock_gettime(CLOCK_MONOTONIC, &tic);
     printf("Tic: %lu seconds and %lu nanoseconds\n", tic.tv_sec, tic.tv_nsec);
 
-    uint32_t j = 0;
-    uint32_t diffc = 0;
-    uint32_t diffr = 0;
-
-
     int numWorkers = __cilkrts_get_nworkers();
     printf("Numbers of workers: %d\n", numWorkers);
     
-    int currWorker = __cilkrts_get_worker_number();
-    printf("Current worker: %d\n", currWorker);
-    //for (int i = 0; i<nnz; i++) cilk::reducer_opadd<unsigned int> vertices[i];
-    //cilk::reducer_opadd<unsigned int> count;
-
-    /* cilk::reducer_string result; */
-    /* cilk_for (std::size_t i = 'A'; i < 'Z'+1; ++i){ */
-    /*     result += (char)i; */
-    /* } */
-    /* std::cout << "The result string is: " */
-    /*          << result.get_value() <<std::endl; */
-
-    printf("Entering cilk counting...");
-    cilk::reducer_opadd<unsigned int> foo;
-    cilk_for (unsigned int i = 1; i<10000; i++) { // wont work with n. Need number. Actually max number is 1000
-        foo += 1;
-    }
-    printf("Exiting cilk counting...");
-    printf("Total foo: %u\n", foo.get_value()); 
+    //int currWorker = __cilkrts_get_worker_number();
+    //printf("Current worker: %d\n", currWorker);
 
     cilk::reducer_opadd<unsigned int> cilk_count;
+    //cilk::reducer<op_list_append<int> > indeces;
+    std::list<unsigned int> indeces;
+    std::list<unsigned int>::iterator it;
+
 
     cilk_for (uint32_t i = 0; i < n; i++) {
-        cilk_for (uint32_t m = csc_col[i]; m < csc_col[i+1]; m++) {
-            cilk_for (uint32_t k = m + 1; k < csc_col[i+1]; k++) {
-                cilk_for (uint32_t p = csc_col[csc_row[m]]; p < csc_col[csc_row[m]+1]; p++) {
+        for (uint32_t m = csc_col[i]; m < csc_col[i+1]; m++) {
+            for (uint32_t k = m + 1; k < csc_col[i+1]; k++) {
+                for (uint32_t p = csc_col[csc_row[m]]; p < csc_col[csc_row[m]+1]; p++) {
                     if (csc_row[p] == csc_row[k]) {
-                        vertices[i]++;
-                        vertices[csc_row[m]]++;
-                        vertices[csc_row[p]]++;
-                        count++;
+                        //vertices[i]++;
+                        //vertices[csc_row[m]]++;
+                        //vertices[csc_row[p]]++;
+                        //count++;
+
+                        // how to keep track of the indeces? Are lists parallel safe? No check and act though
+                        indeces.push_back(i);
+                        indeces.push_back(csc_row[m]);
+                        indeces.push_back(csc_row[p]);
                         cilk_count++;
                     }
                 }
             }
         }
     }
+    for(it=indeces.begin(); it!=indeces.end(); ++it)
+        vertices[*it]++;
+
 
     clock_gettime(CLOCK_MONOTONIC, &toc);
     printf("Toc: %lu seconds and %lu nanoseconds\n", toc.tv_sec, toc.tv_nsec);
