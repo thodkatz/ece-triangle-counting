@@ -4,18 +4,22 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <time.h>
-#include <cilk/cilk.h>
-#include <cilk/cilk_api.h>
-#include <cilk/reducer_opadd.h>
-//#include "include/cilk_api.h""
 
 /*
  * MODE =
+ * 0 --> sequential
  * 1 --> cilk
  * 2 --> openmp
  * 3 --> pthreads
  */
 #define MODE 1
+
+# if MODE == 1
+#include "include/v3_cilk.h"
+#include <cilk/cilk.h>
+#include <cilk/cilk_api.h>
+#include <cilk/reducer_opadd.h>
+#endif
 
 void print_vertix(uint64_t*, uint32_t);
 uint64_t *vertices;
@@ -116,13 +120,13 @@ int main(int argc, char *argv[]) {
     
     // call version 3
     vertices = v3((uint32_t*)csc_row, (uint32_t*)csc_col, nnz, n);
-    print_vertix(vertices, n);
+    //print_vertix(vertices, n);
     free(vertices);
 
     
 #if MODE == 1
     vertices = v3_cilk((uint32_t*)csc_row, (uint32_t*)csc_col, nnz, n);
-    print_vertix(vertices, n);
+    //print_vertix(vertices, n);
     free(vertices);
 #endif
 

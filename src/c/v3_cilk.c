@@ -1,3 +1,4 @@
+#include "include/v3_cilk.h"
 #include "include/main.h"
 #include <time.h>
 #include <cilk/cilk.h>
@@ -5,8 +6,7 @@
 #include <cilk/reducer_opadd.h>
 #include <cilk/reducer_string.h>
 #include <cilk/reducer_list.h>
-#include <pthread.h> //pthread library
-//#include "include/cilk_api.h"
+#include <pthread.h> 
 #include <list>
 
 /*
@@ -89,7 +89,7 @@ uint64_t* v3_cilk(uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, cons
 
     printf("Total triangles (race bug): %lu\n", count);
     printf("Total triangles using cilk: %u\n", cilk_count.get_value()); 
-    printf("Total triangles using cilk: %u\n", indeces.size()/3); 
+    printf("Total triangles using indeces: %u\n", indeces.size()/3); 
 
     return vertices;
 }

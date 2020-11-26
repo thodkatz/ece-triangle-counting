@@ -1,9 +1,5 @@
 #include "include/main.h"
 #include <time.h>
-#include <cilk/cilk.h>
-#include <cilk/cilk_api.h>
-#include <cilk/reducer_opadd.h>
-#include <cilk/reducer_string.h>
 
 /*
  * Counting triangles: The concept is, given a csc format from a down half symmetric matrix, to counte all the possible triangles.
@@ -34,12 +30,6 @@ uint64_t* v3_pre_cilk(uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, 
     struct timespec toc;
     clock_gettime(CLOCK_MONOTONIC, &tic);
     printf("Tic: %lu seconds and %lu nanoseconds\n", tic.tv_sec, tic.tv_nsec);
-
-    int numWorkers = __cilkrts_get_nworkers();
-    printf("Numbers of workers: %d\n", numWorkers);
-    
-    int currWorker = __cilkrts_get_worker_number();
-    printf("Current worker: %d\n", currWorker);
 
     for (uint32_t i = 0; i < n; i++) {
         for (uint32_t m = csc_col[i]; m < csc_col[i+1]; m++) {
