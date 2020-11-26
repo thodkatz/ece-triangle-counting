@@ -132,6 +132,10 @@ int main(int argc, char *argv[]) {
     vertices = v3_openmp((uint32_t*)csc_row, (uint32_t*)csc_col, nnz, n);
     //print_vertix(vertices, n);
     free(vertices);
+
+    vertices = v3_openmp_playground((uint32_t*)csc_row, (uint32_t*)csc_col, nnz, n);
+    //print_vertix(vertices, n);
+    free(vertices);
 #endif
 
     // v3 alternative to unfold parallelism

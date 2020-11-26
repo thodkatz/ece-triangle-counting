@@ -5,7 +5,7 @@ CILKCC=/usr/local/OpenCilk-9.0.1-Linux/bin/clang++
 OBJ=v3.o v2.o v1.o diff_time.o coo2csc.o 
 
 BASE_SRC=main.c diff_time.c mm2coo.c mmio.c coo2csc.c v1.c v2.c v3.c v3_pre_cilk.c
-MP_SRC=$(BASE_SRC) v3_openmp.c
+MP_SRC=$(BASE_SRC) v3_openmp.c v3_openmp_playground.c
 CILK_SRC= $(BASE_SRC) v3_cilk.c 
 PTHREAD_SRC=$(BASE_SRC) v3_pthreads.c
 
