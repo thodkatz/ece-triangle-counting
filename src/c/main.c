@@ -12,14 +12,14 @@
  * 2 --> openmp
  * 3 --> pthreads
  */
-#define MODE 1
+#define MODE 2
 
 # if MODE == 1
 #include "include/v3_cilk.h"
-#include <cilk/cilk.h>
-#include <cilk/cilk_api.h>
-#include <cilk/reducer_opadd.h>
+#elif MODE == 2
+#include "include/v3_openmp.h"
 #endif
+
 
 void print_vertix(uint64_t*, uint32_t);
 uint64_t *vertices;
@@ -126,6 +126,10 @@ int main(int argc, char *argv[]) {
     
 #if MODE == 1
     vertices = v3_cilk((uint32_t*)csc_row, (uint32_t*)csc_col, nnz, n);
+    //print_vertix(vertices, n);
+    free(vertices);
+#elif MODE == 2
+    vertices = v3_openmp((uint32_t*)csc_row, (uint32_t*)csc_col, nnz, n);
     //print_vertix(vertices, n);
     free(vertices);
 #endif

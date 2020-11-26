@@ -6,7 +6,6 @@
 #include <cilk/reducer_opadd.h>
 #include <cilk/reducer_string.h>
 #include <cilk/reducer_list.h>
-#include <pthread.h> 
 #include <list>
 
 /*
@@ -45,12 +44,13 @@ uint64_t* v3_cilk(uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, cons
     //int currWorker = __cilkrts_get_worker_number();
     //printf("Current worker: %d\n", currWorker);
 
-    //cilk::reducer_opadd<unsigned int> cilk_count;
-    //cilk::reducer_list_append<unsigned int> cilk_list;
-    //std::list<unsigned int> indeces; // wont work in parallel
+    cilk::reducer_opadd<unsigned int> cilk_count;
+    cilk::reducer_list_append<unsigned int> cilk_list;
+    std::list<unsigned int> indeces; // wont work in parallel
     //std::list<unsigned int>::iterator it;
 
-    uint16_t vertices_cilk[n][numWorkers] = {};
+    uint64_t cilk_count_mem[numWorkers] = {};
+    //uint64_t vertices_cilk[n][numWorkers]; // seg fault
 
     cilk_for (uint32_t i = 0; i < n; i++) {
         int currWorker = __cilkrts_get_worker_number();
@@ -59,44 +59,31 @@ uint64_t* v3_cilk(uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, cons
             for (uint32_t k = m + 1; k < csc_col[i+1]; k++) {
                 for (uint32_t p = csc_col[csc_row[m]]; p < csc_col[csc_row[m]+1]; p++) {
                     if (csc_row[p] == csc_row[k]) {
-                        //vertices[i]++; // this will count write for one cilk for (the outer)
-                        vertices_cilk[i][currWorker]++;
-                        vertices_cilk[csc_row[m]][currWorker]++;
-                        vertices_cilk[csc_row[p]][currWorker]++;
-                        count++;
+                        count++; // race bug
+                        cilk_count_mem[currWorker]++; // should work
 
                         // how to keep track of the indeces? Are lists parallel safe? No check and act though
                         // eventually stl lists wont work. Use reducers
-                        /* cilk_list->push_back(i); */
-                        /* cilk_list->push_back(csc_row[m]); */
-                        /* cilk_list->push_back(csc_row[p]); */
-                        /* cilk_count++; */
+                        cilk_list->push_back(i);
+                        cilk_list->push_back(csc_row[m]);
+                        cilk_list->push_back(csc_row[p]);
+                        cilk_count++;
                     }
                 }
             }
         }
     }
-    //indeces = cilk_list.get_value() ;
-    //for (std::list<unsigned int>::iterator i = indeces.begin(); i != indeces.end(); i++) {
-    //    vertices[*i]++;
-    //}
-
-    for (int j = 0; j<n; j++) {
-        for(int i=0; i<numWorkers;i++) {
-            vertices[j] += vertices_cilk[j][i];
-        }
+    indeces = cilk_list.get_value() ;
+    for (std::list<unsigned int>::iterator i = indeces.begin(); i != indeces.end(); i++) {
+        vertices[*i]++;
     }
-
-    uint32_t cilk_count_2 = 0;
-    for(int i=0; i<n; i++) {
-        cilk_count_2 += vertices[i];
-    }
-
-
-
-
     // the total numbers of triangle is the length of the list divided by three
 
+
+    uint64_t count_mem = 0;
+    for (int i=0; i<numWorkers;i++) {
+        count_mem += cilk_count_mem[i];
+    }
 
     clock_gettime(CLOCK_MONOTONIC, &toc);
     printf("Toc: %lu seconds and %lu nanoseconds\n", toc.tv_sec, toc.tv_nsec);
@@ -104,9 +91,9 @@ uint64_t* v3_cilk(uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, cons
     printf("Time elapsed (seconds): %0.6f\n", diff);
 
     printf("Total triangles (race bug): %lu\n", count);
-    //printf("Total triangles using cilk: %u\n", cilk_count.get_value()); 
-    //printf("Total triangles using indeces: %u\n", indeces.size()/3); 
-    printf("Total triangles using memory: %u\n", cilk_count_2/3); 
+    printf("Total triangles using cilk: %u\n", cilk_count.get_value()); 
+    printf("Total triangles using indeces: %u\n", indeces.size()/3); 
+    printf("Total triangles using mem: %u\n", count_mem); 
 
     return vertices;
 }
