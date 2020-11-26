@@ -20,10 +20,10 @@ mm2coo.o: include/main.h include/mmio.h
 mmio.o: include/mmio.h
 
 cilk: 
-	$(CC) -O3 $(CILK_SRC) -o main -fcilkplus #-fsanitize=cilk #-Og
+	$(CC) -ggdb $(CILK_SRC) -o main -fcilkplus #-fsanitize=cilk  
 
 openmp: 
-	$(CC) -O3 
+	$(CC) -O3 $(MO_SRC) -o main -fopenmp
 
 .PHONY: clean
 
