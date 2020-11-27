@@ -129,9 +129,9 @@ int main(int argc, char *argv[]) {
     //print_vertix(vertices, n);
     free(vertices);
 #elif MODE == 2
-    //vertices = v3_openmp((uint32_t*)csc_row, (uint32_t*)csc_col, nnz, n);
+    vertices = v3_openmp((uint32_t*)csc_row, (uint32_t*)csc_col, nnz, n);
     //print_vertix(vertices, n);
-    //free(vertices);
+    free(vertices);
 
     vertices = v3_openmp_playground((uint32_t*)csc_row, (uint32_t*)csc_col, nnz, n);
     //print_vertix(vertices, n);
