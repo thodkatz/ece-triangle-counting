@@ -21,7 +21,7 @@
  * n: Rows/columns 
  */
 
-#define NUM_THREADS 6
+#define NUM_THREADS 16
 
 uint64_t* v3_openmp_playground(uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, const uint32_t n) {
     printf("\n----------Version 3 OpenMP Playground is called----------\n");
@@ -37,20 +37,20 @@ uint64_t* v3_openmp_playground(uint32_t *csc_row, uint32_t *csc_col, const uint3
     printf("Tic: %lu seconds and %lu nanoseconds\n", tic.tv_sec, tic.tv_nsec);
 
     int tid = 0;
-    std::vector<unsigned int> indeces;
+
+    printf("The number of threads were : %d\n", omp_get_num_threads());
+    omp_set_num_threads(NUM_THREADS);
 
     #pragma omp parallel
     {
-        omp_set_num_threads(NUM_THREADS);
         tid = omp_get_thread_num();
         if (tid == 0) {
             printf("The number of threads are : %d\n", omp_get_num_threads());
         }
 
-        std::vector<unsigned int> indeces_openmp;
         uint64_t count_openmp=0; // if it not initialized it is not working. It makes sense, because you are increamenting this value
         // uint64_t vertices_openmp[n] = {0}; // this will produce a seg fault
-        #pragma omp for nowait 
+        #pragma omp for 
         for (uint32_t i = 0; i < n; i++) {
             for (uint32_t m = csc_col[i]; m < csc_col[i+1]; m++) {
                 if (csc_row[m] == i) continue; // ignore elements in diagonal
@@ -58,9 +58,6 @@ uint64_t* v3_openmp_playground(uint32_t *csc_row, uint32_t *csc_col, const uint3
                     for (uint32_t p = csc_col[csc_row[m]]; p < csc_col[csc_row[m]+1]; p++) {
                         if (csc_row[p] == csc_row[k]) {
                             count_openmp++;
-                            indeces_openmp.push_back(i);
-                            indeces_openmp.push_back(csc_row[m]);
-                            indeces_openmp.push_back(csc_row[k]);
                         }
                     }
                 }
@@ -70,17 +67,7 @@ uint64_t* v3_openmp_playground(uint32_t *csc_row, uint32_t *csc_col, const uint3
         #pragma omp atomic
         count += count_openmp;
 
-        #pragma omp critical
-        {
-           indeces.insert(indeces.end(), std::make_move_iterator(indeces_openmp.begin()),
-                                         std::make_move_iterator(indeces_openmp.end())); 
-        }
     }
-
-    for (std::vector<unsigned int>::iterator i = indeces.begin(); i != indeces.end(); i++) {
-        vertices[*i]++;
-    }
-
 
 
     clock_gettime(CLOCK_MONOTONIC, &toc);
