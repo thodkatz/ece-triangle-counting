@@ -20,14 +20,12 @@
  * n: Rows/columns 
  */
 
-#define NUM_THREADS 8
+#define NUM_THREADS 16
 
-uint64_t* v3_openmp(uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, const uint32_t n) {
+void v3_openmp(uint64_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, const uint32_t n) {
     printf("\n----------Version 3 OpenMP is called----------\n");
 
 
-
-    uint64_t* vertices = (uint64_t*)calloc(n, sizeof(uint64_t));
     uint64_t count = 0;
 
     struct timespec tic;
@@ -38,14 +36,12 @@ uint64_t* v3_openmp(uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, co
     printf("The number of threads were : %d\n", omp_get_num_threads());
     omp_set_num_threads(NUM_THREADS);
 
-    int tid = 0;
-    
     #pragma omp parallel
     {
-        tid = omp_get_thread_num();
+        int tid = omp_get_thread_num();
         if (tid == 0) printf("The numbers of threads are %d\n", omp_get_num_threads());
 
-        #pragma omp  for reduction(+:count) reduction(+:vertices[:n])
+        #pragma omp  for reduction(+:count, vertices[:n])
         for (uint32_t i = 0; i < n; i++) {
             for (uint32_t m = csc_col[i]; m < csc_col[i+1]; m++) {
                 if (csc_row[m] == i) continue; // ignore elements in diagonal
@@ -64,13 +60,10 @@ uint64_t* v3_openmp(uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, co
     }
 
 
-
     clock_gettime(CLOCK_MONOTONIC, &toc);
     printf("Toc: %lu seconds and %lu nanoseconds\n", toc.tv_sec, toc.tv_nsec);
     double diff = diff_time(tic, toc);
     printf("Time elapsed (seconds): %0.6f\n", diff);
 
     printf("Total triangles openmp: %lu\n", count);
-
-    return vertices;
 }

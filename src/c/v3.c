@@ -1,7 +1,6 @@
 #include "include/main.h"
 #include <time.h>
 
-extern void print_vertix(uint64_t *array, uint32_t nodes);
 /*
  * Counting triangles: The concept is, given a csc format from a down half symmetric matrix, to counte all the possible triangles.
  * One criteria to follow to be sure that you count properly without permuations is the rule: i<j<k following edges. In our test case
@@ -19,9 +18,8 @@ extern void print_vertix(uint64_t *array, uint32_t nodes);
  * n: Rows/columns 
  */
 
-uint64_t* v3(uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, const uint32_t n) {
+void v3(uint64_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, const uint32_t n) {
     printf("\n----------Version 3 is called----------\n");
-    uint64_t* vertices = (uint64_t*)calloc(n, sizeof(uint64_t));
     uint64_t count = 0;
 
     struct timespec tic;
@@ -49,7 +47,7 @@ uint64_t* v3(uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, const uin
         }
 
         if ((csc_col[csc_row[start] + 1] - csc_col[csc_row[start]]) == 0) continue; // if there are no elements in the csc_row[start] then skip
-        if (j == csc_row[start]) continue; // ignore elements in the diagonal
+        //if (j == csc_row[start]) continue; // ignore elements in the diagonal
 
         uint32_t m, k = 0;
         for(m = start + 1; m<csc_col[j+1]; m++) {
@@ -72,5 +70,4 @@ uint64_t* v3(uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, const uin
 
     printf("Total triangles: %lu\n", count);
 
-    return vertices;
 }

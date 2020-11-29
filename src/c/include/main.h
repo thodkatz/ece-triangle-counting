@@ -6,10 +6,12 @@
 #include <time.h>
 #include <stdlib.h>
 
-uint64_t* v1(int*, const uint32_t);
-uint64_t* v2(int*, const uint32_t);
-uint64_t* v3(uint32_t*, uint32_t*, const uint32_t, const uint32_t);
-uint64_t* v3_pre_cilk(uint32_t*, uint32_t*, const uint32_t, const uint32_t);
+void v1(uint64_t*, int*, const uint32_t);
+void v2(uint64_t*, int*, const uint32_t);
+void v3(uint64_t*, uint32_t*, uint32_t*, const uint32_t, const uint32_t);
+void v3_pre_cilk(uint64_t*, uint32_t*, uint32_t*, const uint32_t, const uint32_t);
+void v4(uint64_t*, uint32_t*, uint32_t*, uint32_t*, uint32_t*, const uint32_t, const uint32_t);
+
 
 double diff_time(struct timespec, struct timespec);
 
@@ -24,5 +26,8 @@ void coo2csc(
   uint32_t const         n,         /*!< Number of rows/columns */
   uint32_t const         isOneBased /*!< Whether COO is 0- or 1-based */
 ); 
+
+void merge_csc(uint32_t*, uint32_t*, uint32_t*, uint32_t*, 
+               uint32_t*, uint32_t*, uint32_t&, uint32_t&); 
 
 #endif

@@ -23,7 +23,7 @@
 
 #define NUM_THREADS 16
 
-uint64_t* v3_openmp_playground(uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, const uint32_t n) {
+void v3_openmp_playground(uint64_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, const uint32_t n) {
     printf("\n----------Version 3 OpenMP Playground is called----------\n");
 
 
@@ -37,7 +37,6 @@ uint64_t* v3_openmp_playground(uint32_t *csc_row, uint32_t *csc_col, const uint3
     printf("Tic: %lu seconds and %lu nanoseconds\n", tic.tv_sec, tic.tv_nsec);
 
     int tid = 0;
-
     printf("The number of threads were : %d\n", omp_get_num_threads());
     omp_set_num_threads(NUM_THREADS);
 
@@ -50,10 +49,10 @@ uint64_t* v3_openmp_playground(uint32_t *csc_row, uint32_t *csc_col, const uint3
 
         uint64_t count_openmp=0; // if it not initialized it is not working. It makes sense, because you are increamenting this value
         // uint64_t vertices_openmp[n] = {0}; // this will produce a seg fault
+        // uint64_t* vertices_openmp = (uint64_t*)calloc(n, sizeof(uint64_t)); // this will not produce seg fault but bad performance
         #pragma omp for 
         for (uint32_t i = 0; i < n; i++) {
             for (uint32_t m = csc_col[i]; m < csc_col[i+1]; m++) {
-                if (csc_row[m] == i) continue; // ignore elements in diagonal
                 for (uint32_t k = m + 1; k < csc_col[i+1]; k++) {
                     for (uint32_t p = csc_col[csc_row[m]]; p < csc_col[csc_row[m]+1]; p++) {
                         if (csc_row[p] == csc_row[k]) {
@@ -77,5 +76,4 @@ uint64_t* v3_openmp_playground(uint32_t *csc_row, uint32_t *csc_col, const uint3
 
     printf("Total triangles openmp: %lu\n", count);
 
-    return vertices;
 }

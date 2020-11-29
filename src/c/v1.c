@@ -4,9 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-uint64_t* v1(int *adjacency, const uint32_t nodes) {
+void v1(uint64_t *vertices, int *adjacency, const uint32_t nodes) {
     printf("\n----------Version 1 is called----------\n");
-    uint64_t* vertices = (uint64_t*)calloc(nodes, sizeof(uint64_t));
     uint64_t count = 0;
 
     struct timespec tic;
@@ -31,9 +30,6 @@ uint64_t* v1(int *adjacency, const uint32_t nodes) {
     double diff = diff_time(tic, toc);
     printf("Time elapsed (seconds): %0.6f\n", diff);
     printf("Total triangles: %lu\n", count/6);
-
-    return vertices; // Note: consider to free the allocated memory
-
 }
 
 

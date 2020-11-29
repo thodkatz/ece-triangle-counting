@@ -12,7 +12,7 @@
  * 2 --> openmp
  * 3 --> pthreads
  */
-#define MODE 2
+#define MODE 0
 
 # if MODE == 1
 #include "include/v3_cilk.h"
@@ -22,6 +22,8 @@
 
 
 void print_vertix(uint64_t*, uint32_t);
+void print_csr(uint32_t *, uint32_t *, uint32_t, uint32_t);
+void print_coo(uint32_t *, uint32_t *, uint32_t);
 uint64_t *vertices;
 
 int main(int argc, char *argv[]) {
@@ -80,13 +82,17 @@ int main(int argc, char *argv[]) {
     }
 
 
-    vertices = v1((int *)adjacency, nodes);
+    vertices = (uint64_t*)calloc(nodes, sizeof(uint64_t));
+    v1((uint64_t*)vertices, (int *)adjacency, nodes);
     //print_vertix(vertices, nodes);
     free(vertices);
+    vertices = NULL;
 
-    vertices = v2((int *)adjacency, nodes);
+    vertices = (uint64_t*)calloc(nodes, sizeof(uint64_t));
+    v2((uint64_t*)vertices, (int *)adjacency, nodes);
     //print_vertix(vertices, nodes);
     free(vertices);
+    vertices = NULL;
 
     /**********************************************************/
     /*                    Version 3                           */
@@ -102,50 +108,85 @@ int main(int argc, char *argv[]) {
 
     mm2coo(argc, argv, &coo_row, &coo_col, nnz, n);
 
-    printf("Number of nnz: %u\n", nnz, n);
+    printf("Number of nnz (excluding diagonal elements): %u\n", nnz, n);
     printf("Rows/columns: %u\n", n);
 
-    int i, j;
-    for (i=0; i<nnz; i++) {
-        //printf("[%lu, %lu]\n", coo_row[i], coo_col[i]);
-    }
+    //print_coo(coo_row, coo_col, nnz);
 
     // COO format to CSC
    
-    uint32_t *csc_row = (uint32_t*)malloc(nnz * sizeof(uint32_t)); 
-    uint32_t *csc_col = (uint32_t*)malloc((n+1) * sizeof(uint32_t)); 
+    uint32_t *csc_row_down = (uint32_t*)malloc(nnz * sizeof(uint32_t)); // from the dataset we get the down triangle by default
+    uint32_t *csc_col_down = (uint32_t*)malloc((n+1) * sizeof(uint32_t)); 
     uint32_t isOneBased = 0; // COO is zero based
     
-    coo2csc(csc_row, csc_col, coo_row, coo_col, nnz, n, 0);
+    coo2csc(csc_row_down, csc_col_down, coo_row, coo_col, nnz, n, 0);
+    //print_csr(csc_row_down, csc_col_down, nnz, n);
     
-    // call version 3
-    vertices = v3((uint32_t*)csc_row, (uint32_t*)csc_col, nnz, n);
+    vertices = (uint64_t*)calloc(n, sizeof(uint64_t));
+    v3((uint64_t*)vertices, (uint32_t*)csc_row_down, (uint32_t*)csc_col_down, nnz, n);
     //print_vertix(vertices, n);
     free(vertices);
+    vertices = NULL;
 
+    vertices = (uint64_t*)calloc(n, sizeof(uint64_t));
+    v3_pre_cilk((uint64_t*)vertices, (uint32_t*)csc_row_down, (uint32_t*)csc_col_down, nnz, n);
+    //print_vertix(vertices, n);
+    free(vertices);
+    vertices = NULL;
     
 #if MODE == 1
-    vertices = v3_cilk((uint32_t*)csc_row, (uint32_t*)csc_col, nnz, n);
+    vertices = (uint64_t*)calloc(n, sizeof(uint64_t));
+    v3_cilk((uint64_t*)vertices, (uint32_t*)csc_row_down, (uint32_t*)csc_col_down, nnz, n);
     //print_vertix(vertices, n);
     free(vertices);
-#elif MODE == 2
-    vertices = v3_openmp((uint32_t*)csc_row, (uint32_t*)csc_col, nnz, n);
-    //print_vertix(vertices, n);
-    free(vertices);
+    vertices = NULL;
 
-    vertices = v3_openmp_playground((uint32_t*)csc_row, (uint32_t*)csc_col, nnz, n);
+#elif MODE == 2
+    vertices = (uint64_t*)calloc(n, sizeof(uint64_t));
+    v3_openmp((uint64_t*)vertices, (uint32_t*)csc_row_down, (uint32_t*)csc_col_down, nnz, n);
     //print_vertix(vertices, n);
     free(vertices);
+    vertices = NULL;
+
+    vertices = (uint64_t*)calloc(n, sizeof(uint64_t));
+    v3_openmp_playground((uint64_t*)vertices, (uint32_t*)csc_row_down, (uint32_t*)csc_col_down, nnz, n);
+    //print_vertix(vertices, n);
+    free(vertices);
+    vertices = NULL;
 #endif
 
-    // v3 alternative to unfold parallelism
-    //vertices = v3_pre_cilk((uint32_t*)csc_row, (uint32_t*)csc_col, nnz, n);
-    //print_vertix(vertices, n);
-    //free(vertices);
+    printf("\n----------Version 4 Prerequisites----------\n");
 
-    // free space
-    free(csc_row);
-    free(csc_col);
+    uint32_t* csc_row_up = (uint32_t*)malloc(nnz * sizeof(uint32_t));
+    uint32_t* csc_col_up = (uint32_t*)malloc((n+1) * sizeof(uint32_t));
+
+    printf("Swapping the rows and columns. Creating the upper triangle in csc scheme\n");
+    coo2csc(csc_row_up, csc_col_up, coo_col, coo_row, nnz, n, 0);
+    //print_csr(csc_row_up, csc_col_up, nnz, n);
+
+    uint32_t* csc_row_complete = (uint32_t*)malloc(2*nnz * sizeof(uint32_t));
+    uint32_t* csc_col_complete = (uint32_t*)malloc((n+1) * sizeof(uint32_t));
+    uint32_t nnz_complete = 0;
+    merge_csc(csc_row_down, csc_col_down, csc_row_up, csc_col_up, csc_row_complete, csc_col_complete, nnz_complete, n);
+
+    printf("Called merge csc...\nNumbers of nnz: %u\nRows/columns: %u\n", nnz_complete, n);
+    if (nnz_complete != 2*nnz) printf("Invalid number of non zeros. The function merge_csc() has a bug\n");
+
+    //print_csr(csc_row_complete, csc_col_complete, nnz_complete, n);
+
+    vertices = (uint64_t*)calloc(n, sizeof(uint64_t));
+    v4((uint64_t*)vertices, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete, csc_row_down, csc_col_down, nnz, n);
+    free(vertices);
+    vertices = NULL;
+
+
+    // free space 
+    free(csc_row_down);
+    free(csc_col_down);
+    free(csc_row_up);
+    free(csc_col_up);
+    free(csc_row_complete);
+    free(csc_col_complete);
     free(coo_row);
     free(coo_col);
 
@@ -153,7 +194,26 @@ int main(int argc, char *argv[]) {
 }
 
 void print_vertix(uint64_t *array, uint32_t nodes) {
-    for (int i = 0; i<nodes; i++) {
-        printf("The %d node is participating in %lu triangles\n", i, array[i]);
+    for (uint32_t i = 0; i<nodes; i++) {
+        printf("The %u node is participating in %u triangles\n", i, array[i]);
+    }
+}
+
+void print_csr(uint32_t *csc_row, uint32_t *csc_col, uint32_t nnz, uint32_t n) {
+    printf("The csc scheme is: \nRows: ");
+    for (uint32_t i = 0; i < nnz; i++) {
+        printf("%u, ", csc_row[i]);
+    }
+    printf("\nColumns: ");
+    for (uint32_t i = 0; i < (n+1); i++) {
+        printf("%u, ", csc_col[i]);
+    }
+    printf("\n");
+
+}
+
+void print_coo(uint32_t *coo_row, uint32_t *coo_col, uint32_t nnz) {
+    for (uint32_t i=0; i<nnz; i++) {
+        printf("[%u, %u]\n", coo_row[i], coo_col[i]);
     }
 }
