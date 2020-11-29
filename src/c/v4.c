@@ -112,7 +112,7 @@ int binary_search (uint32_t *array, uint32_t key, int32_t low, int32_t high) {
         if (array[mid] > key) 
             return binary_search(array, key, low, mid-1); 
   
-        return binary_search(array, key, mid + 1, key); 
+        return binary_search(array, key, mid + 1, high); 
     } 
   
     // We reach here when element is not 
