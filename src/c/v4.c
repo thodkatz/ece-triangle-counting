@@ -5,7 +5,7 @@
  * 1 -> binary search (Work in progress)
  * 2 -> linear search
  */
-#define SUM_MODE 2
+#define SUM_MODE 1
 
 void spmv(uint64_t*, uint32_t*, uint32_t*, std::vector<uint32_t>&, const uint32_t, const uint32_t);
 int binary_search (uint32_t*, uint32_t, int32_t, int32_t);
@@ -92,12 +92,12 @@ uint32_t sum_common(uint32_t i,uint32_t j, uint32_t *csc_row, uint32_t *csc_col)
     // iterate the elements of the smaller one and use binary search for the bigger one
     if (diff1 <= diff2) {
         for (uint32_t k = start1; k < end1; k++)
-            value += binary_search((uint32_t*)csc_row, csc_row[k], (int32_t)start2, (int32_t)end2);
+            value += binary_search((uint32_t*)csc_row, csc_row[k], (int32_t)start2, (int32_t)end2 -1);
     }
         
     if (diff2 < diff1) {
         for (uint32_t k = start2; k < end2; k++)
-            value += binary_search((uint32_t*)csc_row, csc_row[k], (int32_t)start1, (int32_t)end1);
+            value += binary_search((uint32_t*)csc_row, csc_row[k], (int32_t)start1, (int32_t)end1-1);
     }
 #endif
 
