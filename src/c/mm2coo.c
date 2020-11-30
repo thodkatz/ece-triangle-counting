@@ -50,9 +50,8 @@ void mm2coo(int argc, char *argv[], uint32_t **rows, uint32_t **columns, uint32_
     *rows = (uint32_t*) malloc(nnz * sizeof(uint32_t));
     *columns = (uint32_t*) malloc(nnz * sizeof(uint32_t));
 
-    int i;
     uint32_t x,y = 0;
-    for (i=0; i<nnz; i++) {
+    for (uint32_t i=0; i<nnz; i++) {
         fscanf(f, "%u %u\n", &x, &y);
         if (x == y) {
             nnz--;

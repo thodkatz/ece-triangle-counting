@@ -12,10 +12,9 @@ void v2(uint64_t *vertices, int *adjacency, const uint32_t nodes) {
     struct timespec toc;
     clock_gettime(CLOCK_MONOTONIC, &tic);
     printf("Tic: %lu seconds and %lu nanoseconds\n", tic.tv_sec, tic.tv_nsec);
-    int i, j, k;
-    for (i=0;i<nodes-2;i++){
-        for (j=i+1;j<nodes-1;j++) {
-            for (k=j+1;k<nodes;k++) {
+    for (uint32_t i=0;i<nodes-2;i++){
+        for (uint32_t j=i+1;j<nodes-1;j++) {
+            for (uint32_t k=j+1;k<nodes;k++) {
                 if (*(adjacency + i*nodes + j) == 1 && *(adjacency + j*nodes + k) == 1 && *(adjacency + k*nodes + i) == 1) {
                     vertices[i] +=1;
                     vertices[j] +=1;

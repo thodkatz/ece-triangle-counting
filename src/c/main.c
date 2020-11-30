@@ -56,9 +56,9 @@ int main(int argc, char *argv[]) {
     // create a random array WARNING: it should be symmetrical. Not just random */
     srand(time(NULL));
     printf("The random generated array is:\n");
-    for (int i = 0; i < nodes; i++)
+    for (uint32_t i = 0; i < nodes; i++)
     {
-        for (int j = 0; j < i+1; j++)
+        for (uint32_t j = 0; j < i+1; j++)
         {
             adjacency[i][j] = rand()%2;
             adjacency[j][i] = adjacency[i][j];
@@ -67,13 +67,13 @@ int main(int argc, char *argv[]) {
         }
     }
     
-    for (int i = 0; i < nodes; i++)
+    for (uint32_t i = 0; i < nodes; i++)
     {
         if (i == 0)
             printf("[[");
         else
             printf(" [");
-        for (int j = 0; j < nodes; j++)
+        for (uint32_t j = 0; j < nodes; j++)
             printf("%d,", adjacency[i][j]);
         if (i == nodes -1)
             printf("]]\n");
@@ -108,7 +108,7 @@ int main(int argc, char *argv[]) {
 
     mm2coo(argc, argv, &coo_row, &coo_col, nnz, n);
 
-    printf("Number of nnz (excluding diagonal elements): %u\n", nnz, n);
+    printf("Number of nnz (excluding diagonal elements): %u\n", nnz);
     printf("Rows/columns: %u\n", n);
 
     //print_coo(coo_row, coo_col, nnz);
@@ -119,7 +119,7 @@ int main(int argc, char *argv[]) {
     uint32_t *csc_col_down = (uint32_t*)malloc((n+1) * sizeof(uint32_t)); 
     uint32_t isOneBased = 0; // COO is zero based
     
-    coo2csc(csc_row_down, csc_col_down, coo_row, coo_col, nnz, n, 0);
+    coo2csc(csc_row_down, csc_col_down, coo_row, coo_col, nnz, n, isOneBased);
     //print_csr(csc_row_down, csc_col_down, nnz, n);
     
     vertices = (uint64_t*)calloc(n, sizeof(uint64_t));
@@ -196,7 +196,7 @@ int main(int argc, char *argv[]) {
 
 void print_vertix(uint64_t *array, uint32_t nodes) {
     for (uint32_t i = 0; i<nodes; i++) {
-        printf("The %u node is participating in %u triangles\n", i, array[i]);
+        printf("The %u node is participating in %lu triangles\n", i, array[i]);
     }
 }
 

@@ -2,13 +2,13 @@
 #include <vector>
 
 /*
- * 1 -> binary search
+ * 1 -> binary search (Work in progress)
  * 2 -> linear search
  */
-#define SUM_MODE 1
+#define SUM_MODE 2
 
-uint32_t* spmv(uint64_t*, uint32_t*, uint32_t*, std::vector<uint32_t>, uint32_t*, const uint32_t, const uint32_t);
-int binary_search (uint32_t *, uint32_t, int32_t, int32_t);
+void spmv(uint64_t*, uint32_t*, uint32_t*, std::vector<uint32_t>&, const uint32_t, const uint32_t);
+int binary_search (uint32_t*, uint32_t, int32_t, int32_t);
 uint32_t sum_common(uint32_t, uint32_t, uint32_t*, uint32_t*);
 
 
@@ -31,13 +31,20 @@ void v4(uint64_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_comple
     /* printf("Down\n"); */
     /* print_csr(csc_row_down, csc_col_down, nnz_complete/2, n); */
 
+    struct timespec tic;
+    struct timespec toc;
+    clock_gettime(CLOCK_MONOTONIC, &tic);
+    printf("Tic: %lu seconds and %lu nanoseconds\n", tic.tv_sec, tic.tv_nsec);
+
     for(uint32_t i = 0; i < n; i++) {
         for (uint32_t j = csc_col_down[i]; j < csc_col_down[i+1]; j++) {
             // now we have i and csc_row_down[j], the coordinates
             uint32_t c = csc_row_down[j];
             //printf("The i is %d and the c is %d\n", i, c);
             //printf("The i is %d and the c is %d\n", i, c);
-            values.push_back(sum_common(i, c, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete));
+            uint32_t temp = sum_common(i, c, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete);
+
+            values.push_back(temp);
         }
     }
 
@@ -47,21 +54,18 @@ void v4(uint64_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_comple
     /* } */
     /* printf("\n"); */
 
-    //uint32_t* y = (uint32_t*)calloc(n, sizeof(uint32_t));
-    uint32_t x[n] = {0};
-    for (int i = 0; i < n; i++) x[i] = 1;
-    spmv(vertices, csc_row_down, csc_col_down, values, x, (nnz_complete/2), n);
+    spmv(vertices, csc_row_down, csc_col_down, values, (nnz_complete/2), n);
 
-    /* printf("The vertices\n"); */
-    /* for(int i=0; i<n; i++){ */
-    /*     printf("%d, ", vertices[i]); */
-    /* } */
-    /* printf("\n"); */
 
     uint32_t count = 0;
     for(uint32_t i = 0; i < n; i++) count += vertices[i];
-    printf("Total number of triangles: %u\n", count/3);
+
+    clock_gettime(CLOCK_MONOTONIC, &toc);
+    printf("Toc: %lu seconds and %lu nanoseconds\n", toc.tv_sec, toc.tv_nsec);
+    double diff = diff_time(tic, toc);
+    printf("Time elapsed (seconds): %0.6f\n", diff);
     
+    printf("Total number of triangles: %u\n", count/3);
 
 }
 
@@ -83,12 +87,6 @@ uint32_t sum_common(uint32_t i,uint32_t j, uint32_t *csc_row, uint32_t *csc_col)
     uint32_t end2 = csc_col[j+1];
     uint32_t diff2 = end2 - start2;
 
-    /* printf("The %d node\n", i); */
-    /* for(int i = start1; i < end1; i++) printf("%d ", csc_row[i]); */
-    /* printf("\n"); */
-    /* printf("The %d node\n", j); */
-    /* for(int i = start2; i < end2; i++) printf("%d ", csc_row[i]); */
-    /* printf("\n"); */
 
 #if SUM_MODE == 1
     // iterate the elements of the smaller one and use binary search for the bigger one
@@ -105,19 +103,28 @@ uint32_t sum_common(uint32_t i,uint32_t j, uint32_t *csc_row, uint32_t *csc_col)
 
 #if SUM_MODE == 2
     // linear search sorted arrays
-    uint32_t i = start1;
-    uint32_t j = start2;
-    while (uint32_t i < end_one && uint32_t j < end_two) {
-        if (csc_row[i] == csc_row[j]) {
-            values++;
-            i ++;
-            j ++;
+    while (start1 < end1 && start2 < end2) {
+        if (csc_row[start1] == csc_row[start2]) {
+            value++;
+            start1++;
+            start2++;
         }
-        else if(csc_row[i] < csc_row[j]) i++;
-        else j ++;
+        else if(csc_row[start1] < csc_row[start2]) start1++;
+        else start2++;
     }
 #endif
-    //printf("The value is %d\n", value);
+    /* if (value != 0 && i == 794761) */
+    /* { */
+    /* printf("The i is %u and j is %u\n", i, j); */
+    /* printf("The first %d node\n", i); */
+    /* for(uint32_t i = start1; i < end1; i++) printf("%d ", csc_row[i]); */
+    /* printf("\n"); */
+    /* printf("The  second %d node\n", j); */
+    /* for(uint32_t i = start2; i < end2; i++) printf("%d ", csc_row[i]); */
+    /* printf("\n"); */
+    /* printf("The value is %d\n", value); */
+    /* } */
+
 
     return value;
 }
@@ -153,19 +160,22 @@ int binary_search (uint32_t *array, uint32_t key, int32_t low, int32_t high) {
  * We divide the values by two to find the correct number of triangles.
  *
  */
-uint32_t* spmv(uint64_t *y, uint32_t *csc_row, uint32_t *csc_col, std::vector<uint32_t> values, uint32_t* x, const uint32_t nnz, const uint32_t n) {
+void spmv(uint64_t *y, uint32_t *csc_row, uint32_t *csc_col, std::vector<uint32_t>& values, const uint32_t nnz, const uint32_t n) {
 
     // x vector will be always 1, so change x -> 1
     for(uint32_t i = 0; i<n; i++) {
         for(uint32_t j = csc_col[i]; j < csc_col[i+1]; j++) {
             //printf("The i is %d and the j is %d\n", i, j);
-            y[i] += values[j] * x[csc_row[j]];
-            y[csc_row[j]] += values[j] * x[i]; 
+            y[i] += values[j] * 1;
+            y[csc_row[j]] += values[j] * 1; 
         }
     }
 
     /* printf("the test was %d", values[0]); */
     /* float temp = (float)values[0] * 0.5; // why this */ 
     /* printf("Test is %f", temp); */
-    for (int i = 0; i < n; i ++) y[i] /=2;
+    for (uint32_t i = 0; i < n; i++) {
+        y[i] /= 2;
+    }
+    
 }

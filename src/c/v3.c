@@ -1,6 +1,9 @@
 #include "include/main.h"
 #include <time.h>
 
+
+//extern int binary_search (uint32_t*, uint32_t, int32_t, int32_t); 
+
 /*
  * Counting triangles: The concept is, given a csc format from a down half symmetric matrix, to counte all the possible triangles.
  * One criteria to follow to be sure that you count properly without permuations is the rule: i<j<k following edges. In our test case

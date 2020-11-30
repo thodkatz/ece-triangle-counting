@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS=-g -Wall
+CFLAGS=-g -O3 -Wall
 CILKCC=/usr/local/OpenCilk-9.0.1-Linux/bin/clang++
 
 
