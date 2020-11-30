@@ -175,7 +175,8 @@ int main(int argc, char *argv[]) {
     //print_csr(csc_row_complete, csc_col_complete, nnz_complete, n);
 
     vertices = (uint64_t*)calloc(n, sizeof(uint64_t));
-    v4((uint64_t*)vertices, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete, csc_row_down, csc_col_down, nnz, n);
+    v4((uint64_t*)vertices, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete, csc_row_down, csc_col_down, nnz_complete, n);
+    //print_vertix(vertices, n);
     free(vertices);
     vertices = NULL;
 
