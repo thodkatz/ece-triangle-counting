@@ -1,4 +1,10 @@
 #include "include/main.h"
+#include "include/v4_cilk.h"
+#include <cilk/cilk.h>
+#include <cilk/cilk_api.h>
+#include <cilk/reducer_opadd.h>
+#include <cilk/reducer_string.h>
+#include <cilk/reducer_list.h>
 #include <vector>
 
 /*
@@ -7,11 +13,9 @@
  */
 #define SUM_MODE 2
 
-extern void print_csr(uint32_t *, uint32_t *, uint32_t, uint32_t);
-void spmv(uint64_t*, uint32_t*, uint32_t*, std::vector<uint32_t>&, const uint32_t, const uint32_t);
-int binary_search (uint32_t*, uint32_t, int32_t, int32_t);
-uint32_t sum_common(uint32_t, uint32_t, uint32_t*, uint32_t*);
+#define NWORKERS "2"
 
+extern void print_csr(uint32_t *, uint32_t *, uint32_t, uint32_t);
 
 /*
  * Input: the adjacency matrix in a csc scheme for both the complete symmetric and the down triagonal
@@ -19,9 +23,9 @@ uint32_t sum_common(uint32_t, uint32_t, uint32_t*, uint32_t*);
  * The down triagonal will be used to walk only the half matrix
  *
  */
-void v4(uint64_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_complete, uint32_t *csc_row_down, uint32_t *csc_col_down,
+void v4_cilk(uint64_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_complete, uint32_t *csc_row_down, uint32_t *csc_col_down,
             const uint32_t nnz_complete, const uint32_t n) {
-    printf("\n----------Version 4 is called----------\n");
+    printf("\n----------Version 4 Cilk is called----------\n");
 
     std::vector<uint32_t> values;
 
@@ -30,15 +34,26 @@ void v4(uint64_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_comple
     clock_gettime(CLOCK_MONOTONIC, &tic);
     printf("Tic: %lu seconds and %lu nanoseconds\n", tic.tv_sec, tic.tv_nsec);
 
-    for(uint32_t i = 0; i < n; i++) {
+
+    if (0!= __cilkrts_set_param("nworkers", NWORKERS))
+    {
+        printf("Failed to set worker count\n");
+    }
+
+    int numWorkers = __cilkrts_get_nworkers();
+    printf("Numbers of workers: %d\n", numWorkers);
+
+    cilk_for (uint32_t i = 0; i < n; i++) {
         for (uint32_t j = csc_col_down[i]; j < csc_col_down[i+1]; j++) {
 
             uint32_t c = csc_row_down[j];
-            values.push_back(sum_common(i, c, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete));
+            //values.push_back(sum_common_cilk(i, c, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete));
         }
     }
 
-    spmv(vertices, csc_row_down, csc_col_down, values, (nnz_complete/2), n);
+    for (uint32_t i = 0; i < nnz_complete/2; i++) values.push_back(i);
+
+    spmv_cilk(vertices, csc_row_down, csc_col_down, values, (nnz_complete/2), n);
 
 
     uint32_t count = 0;
@@ -56,7 +71,7 @@ void v4(uint64_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_comple
 /*
  * Returns the sum of the common elements of a symmetric csc matrix for two nodes
  */
-uint32_t sum_common(uint32_t i,uint32_t j, uint32_t *csc_row, uint32_t *csc_col) {
+uint32_t sum_common_cilk(uint32_t i,uint32_t j, uint32_t *csc_row, uint32_t *csc_col) {
     
     uint32_t value = 0;
 
@@ -73,12 +88,12 @@ uint32_t sum_common(uint32_t i,uint32_t j, uint32_t *csc_row, uint32_t *csc_col)
     // iterate the elements of the smaller one and use binary search for the bigger one
     if (diff1 <= diff2) {
         for (uint32_t k = start1; k < end1; k++)
-            value += binary_search((uint32_t*)csc_row, csc_row[k], (int32_t)start2, (int32_t)end2 - 1);
+            value += binary_search_cilk((uint32_t*)csc_row, csc_row[k], (int32_t)start2, (int32_t)end2 - 1);
     }
         
     if (diff2 < diff1) {
         for (uint32_t k = start2; k < end2; k++)
-            value += binary_search((uint32_t*)csc_row, csc_row[k], (int32_t)start1, (int32_t)end1 - 1);
+            value += binary_search_cilk((uint32_t*)csc_row, csc_row[k], (int32_t)start1, (int32_t)end1 - 1);
     }
 #endif
 
@@ -99,7 +114,7 @@ uint32_t sum_common(uint32_t i,uint32_t j, uint32_t *csc_row, uint32_t *csc_col)
 }
 
 // high should be signed!!
-int binary_search (uint32_t *array, uint32_t key, int32_t low, int32_t high) {
+int binary_search_cilk(uint32_t *array, uint32_t key, int32_t low, int32_t high) {
 
 
     if (high >= low) { 
@@ -109,9 +124,9 @@ int binary_search (uint32_t *array, uint32_t key, int32_t low, int32_t high) {
             return 1; 
   
         if (array[mid] > key) 
-            return binary_search(array, key, low, mid-1); 
+            return binary_search_cilk(array, key, low, mid-1); 
   
-        return binary_search(array, key, mid + 1, high); 
+        return binary_search_cilk(array, key, mid + 1, high); 
     } 
   
 
@@ -124,7 +139,7 @@ int binary_search (uint32_t *array, uint32_t key, int32_t low, int32_t high) {
  * We divide the values by two to find the correct number of triangles.
  *
  */
-void spmv(uint64_t *y, uint32_t *csc_row, uint32_t *csc_col, std::vector<uint32_t>& values, const uint32_t nnz, const uint32_t n) {
+void spmv_cilk(uint64_t *y, uint32_t *csc_row, uint32_t *csc_col, std::vector<uint32_t>& values, const uint32_t nnz, const uint32_t n) {
 
     // x vector will be always 1, so change x -> 1
     for(uint32_t i = 0; i<n; i++) {
@@ -133,7 +148,6 @@ void spmv(uint64_t *y, uint32_t *csc_row, uint32_t *csc_col, std::vector<uint32_
             y[csc_row[j]] += values[j] * 1; 
         }
     }
-
 
     for (uint32_t i = 0; i < n; i++) y[i] /= 2;
         

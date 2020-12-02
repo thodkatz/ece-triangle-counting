@@ -12,10 +12,11 @@
  * 2 --> openmp
  * 3 --> pthreads
  */
-#define MODE 0
+#define MODE 1
 
 # if MODE == 1
 #include "include/v3_cilk.h"
+#include "include/v4_cilk.h"
 #elif MODE == 2
 #include "include/v3_openmp.h"
 #endif
@@ -123,20 +124,20 @@ int main(int argc, char *argv[]) {
     //print_csr(csc_row_down, csc_col_down, nnz, n);
     
     vertices = (uint64_t*)calloc(n, sizeof(uint64_t));
-    v3((uint64_t*)vertices, (uint32_t*)csc_row_down, (uint32_t*)csc_col_down, nnz, n);
+    //v3((uint64_t*)vertices, (uint32_t*)csc_row_down, (uint32_t*)csc_col_down, nnz, n);
     //print_vertix(vertices, n);
     free(vertices);
     vertices = NULL;
 
     vertices = (uint64_t*)calloc(n, sizeof(uint64_t));
-    v3_pre_cilk((uint64_t*)vertices, (uint32_t*)csc_row_down, (uint32_t*)csc_col_down, nnz, n);
+    //v3_pre_cilk((uint64_t*)vertices, (uint32_t*)csc_row_down, (uint32_t*)csc_col_down, nnz, n);
     //print_vertix(vertices, n);
     free(vertices);
     vertices = NULL;
     
 #if MODE == 1
     vertices = (uint64_t*)calloc(n, sizeof(uint64_t));
-    v3_cilk((uint64_t*)vertices, (uint32_t*)csc_row_down, (uint32_t*)csc_col_down, nnz, n);
+    //v3_cilk((uint64_t*)vertices, (uint32_t*)csc_row_down, (uint32_t*)csc_col_down, nnz, n);
     //print_vertix(vertices, n);
     free(vertices);
     vertices = NULL;
@@ -175,10 +176,19 @@ int main(int argc, char *argv[]) {
     //print_csr(csc_row_complete, csc_col_complete, nnz_complete, n);
 
     vertices = (uint64_t*)calloc(n, sizeof(uint64_t));
-    v4((uint64_t*)vertices, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete, csc_row_down, csc_col_down, nnz_complete, n);
+    //v4((uint64_t*)vertices, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete, csc_row_down, csc_col_down, nnz_complete, n);
     //print_vertix(vertices, n);
     free(vertices);
     vertices = NULL;
+
+#if MODE == 1
+    vertices = (uint64_t*)calloc(n, sizeof(uint64_t));
+    v4_cilk((uint64_t*)vertices, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete, csc_row_down, csc_col_down, nnz_complete, n);
+    //print_vertix(vertices, n);
+    free(vertices);
+    vertices = NULL;
+#endif
+    
 
 
     // free space 
@@ -193,6 +203,8 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
+
+
 
 void print_vertix(uint64_t *array, uint32_t nodes) {
     for (uint32_t i = 0; i<nodes; i++) {

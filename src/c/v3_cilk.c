@@ -39,6 +39,7 @@ void v3_cilk(uint64_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const uin
     clock_gettime(CLOCK_MONOTONIC, &tic);
     printf("Tic: %lu seconds and %lu nanoseconds\n", tic.tv_sec, tic.tv_nsec);
 
+    // cilkrts set param doesnt work with clang
     if (0!= __cilkrts_set_param("nworkers", NWORKERS))
     {
         printf("Failed to set worker count\n");
