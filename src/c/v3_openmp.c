@@ -36,21 +36,23 @@ void v3_openmp(uint64_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const u
     printf("The number of threads were : %d\n", omp_get_num_threads());
     omp_set_num_threads(NUM_THREADS);
 
+
+    uint64_t* vertices_openmp = (uint64_t*)calloc(n, sizeof(uint64_t)); // this will not produce seg fault but bad performance
     #pragma omp parallel
     {
         int tid = omp_get_thread_num();
         if (tid == 0) printf("The numbers of threads are %d\n", omp_get_num_threads());
 
-        //#pragma omp  for reduction(+:count, vertices[:n]) seg fault
-        #pragma omp  for reduction(+:count) schedule(dynamic)
+        //#pragma omp  for reduction(+:count, vertices[:n]) seg fault, because vertices was global var maybe
+        #pragma omp  for reduction(+:count, vertices_openmp[:n]) schedule(dynamic) 
         for (uint32_t i = 0; i < n; i++) {
             for (uint32_t m = csc_col[i]; m < csc_col[i+1]; m++) {
                 for (uint32_t k = m + 1; k < csc_col[i+1]; k++) {
                     for (uint32_t p = csc_col[csc_row[m]]; p < csc_col[csc_row[m]+1]; p++) {
                         if (csc_row[p] == csc_row[k]) {
-                            vertices[i]++;
-                            vertices[csc_row[m]]++;
-                            vertices[csc_row[p]]++;
+                            vertices_openmp[i]++;
+                            vertices_openmp[csc_row[m]]++;
+                            vertices_openmp[csc_row[p]]++;
                             count++;
                         }
                     }
