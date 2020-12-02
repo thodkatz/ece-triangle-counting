@@ -5,7 +5,7 @@
  * 1 -> binary search
  * 2 -> linear search
  */
-#define SUM_MODE 2
+#define SUM_MODE 1
 
 extern void print_csr(uint32_t *, uint32_t *, uint32_t, uint32_t);
 void spmv(uint64_t*, uint32_t*, uint32_t*, std::vector<uint32_t>&, const uint32_t, const uint32_t);

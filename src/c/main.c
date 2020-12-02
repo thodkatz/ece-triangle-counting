@@ -125,7 +125,7 @@ int main(int argc, char *argv[]) {
     //print_csr(csc_row_low, csc_col_low, nnz, n);
     
     vertices = (uint64_t*)calloc(n, sizeof(uint64_t));
-    v3((uint64_t*)vertices, (uint32_t*)csc_row_low, (uint32_t*)csc_col_low, nnz, n);
+    //v3((uint64_t*)vertices, (uint32_t*)csc_row_low, (uint32_t*)csc_col_low, nnz, n);
     //print_vertix(vertices, n);
     free(vertices);
     vertices = NULL;
@@ -138,7 +138,7 @@ int main(int argc, char *argv[]) {
     
 #if MODE == 1
     vertices = (uint64_t*)calloc(n, sizeof(uint64_t));
-    v3_cilk((uint64_t*)vertices, (uint32_t*)csc_row_low, (uint32_t*)csc_col_low, nnz, n);
+    //v3_cilk((uint64_t*)vertices, (uint32_t*)csc_row_low, (uint32_t*)csc_col_low, nnz, n);
     //print_vertix(vertices, n);
     free(vertices);
     vertices = NULL;

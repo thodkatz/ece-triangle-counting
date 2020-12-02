@@ -11,11 +11,14 @@
  * 1 -> binary search
  * 2 -> linear search
  */
-#define SUM_MODE 2
+#define SUM_MODE 1
 
-#define NWORKERS "2"
+#define NWORKERS "4"
 
 extern void print_csr(uint32_t *, uint32_t *, uint32_t, uint32_t);
+
+
+extern int binary_search(uint32_t*, uint32_t, int32_t, int32_t);
 
 /*
  * Input: the adjacency matrix in a csc scheme for both the complete symmetric and the down triagonal
@@ -27,7 +30,6 @@ void v4_cilk(uint64_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_c
             const uint32_t nnz_complete, const uint32_t n) {
     printf("\n----------Version 4 Cilk is called----------\n");
 
-    uint32_t *values = (uint32_t*)malloc(nnz_complete/2 * sizeof(uint32_t));
 
     struct timespec tic;
     struct timespec toc;
@@ -41,21 +43,26 @@ void v4_cilk(uint64_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_c
         printf("Failed to set worker count\n");
     }
 
-    int numWorkers = __cilkrts_get_nworkers();
+    uint8_t numWorkers = __cilkrts_get_nworkers();
     printf("Numbers of workers: %d\n", numWorkers);
 
-    uint32_t product = 0;
-    for (uint32_t i = 0; i < n; i++) {
-        for (uint32_t j = csc_col_down[i]; j < csc_col_down[i+1]; j++) {
+    uint32_t *values = (uint32_t*)malloc(nnz_complete/2 * sizeof(uint32_t));
+
+
+    cilk_for (uint32_t i = 0; i < n; i++) {
+        cilk_for (uint32_t j = csc_col_down[i]; j < csc_col_down[i+1]; j++) {
 
             uint32_t c = csc_row_down[j];
-            product = sum_common_cilk(i, c, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete);
+            uint32_t product = sum_common_cilk(i, c, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete);
             values[j] = product;
         }
     }
 
 
+    // this function takes a little time. Not worthy for parallelism
     spmv_cilk(vertices, csc_row_down, csc_col_down, values, (nnz_complete/2), n);
+
+    free(values);
 
 
     uint32_t count = 0;
@@ -118,21 +125,26 @@ uint32_t sum_common_cilk(uint32_t i,uint32_t j, uint32_t *csc_row, uint32_t *csc
 // high should be signed!!
 int binary_search_cilk(uint32_t *array, uint32_t key, int32_t low, int32_t high) {
 
+    uint8_t numWorkers = __cilkrts_get_nworkers();
+    int32_t start = low;
+    int32_t end = high;
+    uint32_t step = (high - low)/numWorkers;
 
-    if (high >= low) { 
-        int32_t mid = low + (high - low) / 2; 
-  
-        if (array[mid] == key) 
-            return 1; 
-  
-        if (array[mid] > key) 
-            return binary_search_cilk(array, key, low, mid-1); 
-  
-        return binary_search_cilk(array, key, mid + 1, high); 
+    uint8_t value = 0;
+
+    cilk_for (uint8_t i = 0; i < numWorkers; i++) {
+        low = start + i*step;
+        high = low + step;
+        if (i == numWorkers-1)  {
+            high = end;
+        }
+
+        // implemented in v4.c
+        uint8_t temp = binary_search(array, key, low, high);
+        if(temp == 1) value = 1;
     } 
-  
 
-    return 0; 
+    return value; 
 } 
 
 /*
@@ -151,6 +163,6 @@ void spmv_cilk(uint64_t *y, uint32_t *csc_row, uint32_t *csc_col, uint32_t *valu
         }
     }
 
-    for (uint32_t i = 0; i < n; i++) y[i] /= 2;
+    cilk_for (uint32_t i = 0; i < n; i++) y[i] /= 2;
         
 }
