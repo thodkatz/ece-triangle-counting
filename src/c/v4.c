@@ -14,12 +14,12 @@ uint32_t sum_common(uint32_t, uint32_t, uint32_t*, uint32_t*);
 
 
 /*
- * Input: the adjacency matrix in a csc scheme for both the complete symmetric and the down triagonal
+ * Input: the adjacency matrix in a csc scheme for both the complete symmetric and the lower triangular
  *
- * The down triagonal will be used to walk only the half matrix
+ * The lower triangular will be used to walk only the half matrix
  *
  */
-void v4(uint64_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_complete, uint32_t *csc_row_down, uint32_t *csc_col_down,
+void v4(uint64_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_complete, uint32_t *csc_row_low, uint32_t *csc_col_low,
             const uint32_t nnz_complete, const uint32_t n) {
     printf("\n----------Version 4 is called----------\n");
 
@@ -31,14 +31,14 @@ void v4(uint64_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_comple
     printf("Tic: %lu seconds and %lu nanoseconds\n", tic.tv_sec, tic.tv_nsec);
 
     for(uint32_t i = 0; i < n; i++) {
-        for (uint32_t j = csc_col_down[i]; j < csc_col_down[i+1]; j++) {
+        for (uint32_t j = csc_col_low[i]; j < csc_col_low[i+1]; j++) {
 
-            uint32_t c = csc_row_down[j];
+            uint32_t c = csc_row_low[j];
             values.push_back(sum_common(i, c, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete));
         }
     }
 
-    spmv(vertices, csc_row_down, csc_col_down, values, (nnz_complete/2), n);
+    spmv(vertices, csc_row_low, csc_col_low, values, (nnz_complete/2), n);
 
 
     uint32_t count = 0;

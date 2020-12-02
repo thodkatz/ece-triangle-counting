@@ -15,7 +15,7 @@ main: $(BASE_SRC)
 	$(CC) $(CFLAGS) $(BASE_SRC) -o $@ 
 
 cilk:
-	$(CC) $(CILK_SRC) -o main -fcilkplus #-fsanitize=cilk  
+	$(CILKCC2) -g $(CILK_SRC) -o main -fcilkplus #-fsanitize=cilk  
 
 openmp: 
 	$(CC) -O3 $(MP_SRC) -o main -fopenmp

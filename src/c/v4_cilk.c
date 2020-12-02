@@ -27,7 +27,7 @@ void v4_cilk(uint64_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_c
             const uint32_t nnz_complete, const uint32_t n) {
     printf("\n----------Version 4 Cilk is called----------\n");
 
-    std::vector<uint32_t> values;
+    uint32_t *values = (uint32_t*)malloc(nnz_complete/2 * sizeof(uint32_t));
 
     struct timespec tic;
     struct timespec toc;
@@ -35,6 +35,7 @@ void v4_cilk(uint64_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_c
     printf("Tic: %lu seconds and %lu nanoseconds\n", tic.tv_sec, tic.tv_nsec);
 
 
+    __cilkrts_end_cilk();
     if (0!= __cilkrts_set_param("nworkers", NWORKERS))
     {
         printf("Failed to set worker count\n");
@@ -43,15 +44,16 @@ void v4_cilk(uint64_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_c
     int numWorkers = __cilkrts_get_nworkers();
     printf("Numbers of workers: %d\n", numWorkers);
 
-    cilk_for (uint32_t i = 0; i < n; i++) {
+    uint32_t product = 0;
+    for (uint32_t i = 0; i < n; i++) {
         for (uint32_t j = csc_col_down[i]; j < csc_col_down[i+1]; j++) {
 
             uint32_t c = csc_row_down[j];
-            //values.push_back(sum_common_cilk(i, c, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete));
+            product = sum_common_cilk(i, c, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete);
+            values[j] = product;
         }
     }
 
-    for (uint32_t i = 0; i < nnz_complete/2; i++) values.push_back(i);
 
     spmv_cilk(vertices, csc_row_down, csc_col_down, values, (nnz_complete/2), n);
 
@@ -139,7 +141,7 @@ int binary_search_cilk(uint32_t *array, uint32_t key, int32_t low, int32_t high)
  * We divide the values by two to find the correct number of triangles.
  *
  */
-void spmv_cilk(uint64_t *y, uint32_t *csc_row, uint32_t *csc_col, std::vector<uint32_t>& values, const uint32_t nnz, const uint32_t n) {
+void spmv_cilk(uint64_t *y, uint32_t *csc_row, uint32_t *csc_col, uint32_t *values, const uint32_t nnz, const uint32_t n) {
 
     // x vector will be always 1, so change x -> 1
     for(uint32_t i = 0; i<n; i++) {

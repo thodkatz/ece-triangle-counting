@@ -34,7 +34,8 @@ int main(int argc, char *argv[]) {
     /*                  Version 1 and 2                       */
     /**********************************************************/
 
-    const uint32_t nodes = 6; // maximum 1430
+    printf("\n----------Version 1 and 2 Prerequisites----------\n");
+    const uint32_t nodes = 5; // maximum 1430
     int adjacency[nodes][nodes] = {0};
     size_t length = sizeof(adjacency)/sizeof(adjacency[0][0]);
     printf("The length of the array is %lu and the nodes are %u\n", length, nodes);
@@ -46,7 +47,7 @@ int main(int argc, char *argv[]) {
     /*                            {1, 0, 1, 1, 0, 1}, */
     /*                            {1, 1, 0, 0, 1, 0}}; */
 
-    /* // get only the down half of a symmetrical array */
+    /* // get only the low half of a symmetrical array */
     /* for(int i = 0; i < nodes; i++) { */
     /*     for (int j = 0; j < nodes; j++) { */
     /*         if(i<j) adjacency[i][j] = 0; */
@@ -116,41 +117,41 @@ int main(int argc, char *argv[]) {
 
     // COO format to CSC
    
-    uint32_t *csc_row_down = (uint32_t*)malloc(nnz * sizeof(uint32_t)); // from the dataset we get the down triangle by default
-    uint32_t *csc_col_down = (uint32_t*)malloc((n+1) * sizeof(uint32_t)); 
+    uint32_t *csc_row_low = (uint32_t*)malloc(nnz * sizeof(uint32_t)); // from the dataset we get the lower triangular by default
+    uint32_t *csc_col_low = (uint32_t*)malloc((n+1) * sizeof(uint32_t)); 
     uint32_t isOneBased = 0; // COO is zero based
     
-    coo2csc(csc_row_down, csc_col_down, coo_row, coo_col, nnz, n, isOneBased);
-    //print_csr(csc_row_down, csc_col_down, nnz, n);
+    coo2csc(csc_row_low, csc_col_low, coo_row, coo_col, nnz, n, isOneBased);
+    //print_csr(csc_row_low, csc_col_low, nnz, n);
     
     vertices = (uint64_t*)calloc(n, sizeof(uint64_t));
-    //v3((uint64_t*)vertices, (uint32_t*)csc_row_down, (uint32_t*)csc_col_down, nnz, n);
+    v3((uint64_t*)vertices, (uint32_t*)csc_row_low, (uint32_t*)csc_col_low, nnz, n);
     //print_vertix(vertices, n);
     free(vertices);
     vertices = NULL;
 
     vertices = (uint64_t*)calloc(n, sizeof(uint64_t));
-    //v3_pre_cilk((uint64_t*)vertices, (uint32_t*)csc_row_down, (uint32_t*)csc_col_down, nnz, n);
+    //v3_pre_cilk((uint64_t*)vertices, (uint32_t*)csc_row_low, (uint32_t*)csc_col_low, nnz, n);
     //print_vertix(vertices, n);
     free(vertices);
     vertices = NULL;
     
 #if MODE == 1
     vertices = (uint64_t*)calloc(n, sizeof(uint64_t));
-    //v3_cilk((uint64_t*)vertices, (uint32_t*)csc_row_down, (uint32_t*)csc_col_down, nnz, n);
+    v3_cilk((uint64_t*)vertices, (uint32_t*)csc_row_low, (uint32_t*)csc_col_low, nnz, n);
     //print_vertix(vertices, n);
     free(vertices);
     vertices = NULL;
 
 #elif MODE == 2
     vertices = (uint64_t*)calloc(n, sizeof(uint64_t));
-    v3_openmp((uint64_t*)vertices, (uint32_t*)csc_row_down, (uint32_t*)csc_col_down, nnz, n);
+    v3_openmp((uint64_t*)vertices, (uint32_t*)csc_row_low, (uint32_t*)csc_col_low, nnz, n);
     //print_vertix(vertices, n);
     free(vertices);
     vertices = NULL;
 
     vertices = (uint64_t*)calloc(n, sizeof(uint64_t));
-    v3_openmp_playground((uint64_t*)vertices, (uint32_t*)csc_row_down, (uint32_t*)csc_col_down, nnz, n);
+    v3_openmp_playground((uint64_t*)vertices, (uint32_t*)csc_row_low, (uint32_t*)csc_col_low, nnz, n);
     //print_vertix(vertices, n);
     free(vertices);
     vertices = NULL;
@@ -168,22 +169,22 @@ int main(int argc, char *argv[]) {
     uint32_t* csc_row_complete = (uint32_t*)malloc(2*nnz * sizeof(uint32_t));
     uint32_t* csc_col_complete = (uint32_t*)malloc((n+1) * sizeof(uint32_t));
     uint32_t nnz_complete = 0;
-    merge_csc(csc_row_down, csc_col_down, csc_row_up, csc_col_up, csc_row_complete, csc_col_complete, nnz_complete, n);
+    merge_csc(csc_row_low, csc_col_low, csc_row_up, csc_col_up, csc_row_complete, csc_col_complete, nnz_complete, n);
 
-    printf("Called merge csc...\nNumbers of nnz: %u\nRows/columns: %u\n", nnz_complete, n);
+    printf("Numbers of nnz symmetric matrix: %u\nRows/columns: %u\n", nnz_complete, n);
     if (nnz_complete != 2*nnz) printf("Invalid number of non zeros. The function merge_csc() has a bug\n");
 
     //print_csr(csc_row_complete, csc_col_complete, nnz_complete, n);
 
     vertices = (uint64_t*)calloc(n, sizeof(uint64_t));
-    //v4((uint64_t*)vertices, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete, csc_row_down, csc_col_down, nnz_complete, n);
+    v4((uint64_t*)vertices, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete, csc_row_low, csc_col_low, nnz_complete, n);
     //print_vertix(vertices, n);
     free(vertices);
     vertices = NULL;
 
 #if MODE == 1
     vertices = (uint64_t*)calloc(n, sizeof(uint64_t));
-    v4_cilk((uint64_t*)vertices, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete, csc_row_down, csc_col_down, nnz_complete, n);
+    v4_cilk((uint64_t*)vertices, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete, csc_row_low, csc_col_low, nnz_complete, n);
     //print_vertix(vertices, n);
     free(vertices);
     vertices = NULL;
@@ -192,8 +193,8 @@ int main(int argc, char *argv[]) {
 
 
     // free space 
-    free(csc_row_down);
-    free(csc_col_down);
+    free(csc_row_low);
+    free(csc_col_low);
     free(csc_row_up);
     free(csc_col_up);
     free(csc_row_complete);

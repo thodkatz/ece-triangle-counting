@@ -63,4 +63,7 @@ void coo2csc(
     last = temp;
   }
 
+
+  printf("Success, COO format is converted to CSC\n");
+
 }
