@@ -12,7 +12,7 @@
  * 2 --> openmp
  * 3 --> pthreads
  */
-#define MODE 0
+#define MODE 2
 
 # if MODE == 1
 #include "include/v3_cilk.h"
@@ -126,7 +126,7 @@ int main(int argc, char *argv[]) {
     //print_csr(csc_row_low, csc_col_low, nnz, n);
     
     vertices = (uint64_t*)calloc(n, sizeof(uint64_t));
-    //v3((uint64_t*)vertices, (uint32_t*)csc_row_low, (uint32_t*)csc_col_low, nnz, n);
+    v3((uint64_t*)vertices, (uint32_t*)csc_row_low, (uint32_t*)csc_col_low, nnz, n);
     //print_vertix(vertices, n);
     free(vertices);
     vertices = NULL;
@@ -146,13 +146,13 @@ int main(int argc, char *argv[]) {
 
 #elif MODE == 2
     vertices = (uint64_t*)calloc(n, sizeof(uint64_t));
-    //v3_openmp((uint64_t*)vertices, (uint32_t*)csc_row_low, (uint32_t*)csc_col_low, nnz, n); // this is way slow
+    v3_openmp((uint64_t*)vertices, (uint32_t*)csc_row_low, (uint32_t*)csc_col_low, nnz, n); // this is way slow
     //print_vertix(vertices, n);
     free(vertices);
     vertices = NULL;
 
     vertices = (uint64_t*)calloc(n, sizeof(uint64_t));
-    //v3_openmp_playground((uint64_t*)vertices, (uint32_t*)csc_row_low, (uint32_t*)csc_col_low, nnz, n);
+    v3_openmp_playground((uint64_t*)vertices, (uint32_t*)csc_row_low, (uint32_t*)csc_col_low, nnz, n);
     //print_vertix(vertices, n);
     free(vertices);
     vertices = NULL;
@@ -184,7 +184,7 @@ int main(int argc, char *argv[]) {
     vertices = NULL;
 
     vertices = (uint64_t*)calloc(n, sizeof(uint64_t));
-    v4_op((uint64_t*)vertices, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete, csc_row_low, csc_col_low, nnz_complete, n);
+    //v4_op((uint64_t*)vertices, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete, csc_row_low, csc_col_low, nnz_complete, n);
     //print_vertix(vertices, n);
     free(vertices);
     vertices = NULL;

@@ -49,7 +49,7 @@ void v3_openmp_playground(uint64_t *vertices, uint32_t *csc_row, uint32_t *csc_c
         uint64_t count_openmp = 0; // if it not initialized it is not working. It makes sense, because you are increamenting this value
         // uint64_t vertices_openmp[n] = {0}; // this will produce a seg fault
         // uint64_t* vertices_openmp = (uint64_t*)calloc(n, sizeof(uint64_t)); // this will not produce seg fault but bad performance
-        #pragma omp for 
+        #pragma omp for schedule(dynamic)
         for (uint32_t i = 0; i < n; i++) {
             for (uint32_t m = csc_col[i]; m < csc_col[i+1]; m++) {
                 for (uint32_t k = m + 1; k < csc_col[i+1]; k++) {

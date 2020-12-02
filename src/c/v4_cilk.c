@@ -108,6 +108,7 @@ uint32_t sum_common_cilk(uint32_t i,uint32_t j, uint32_t *csc_row, uint32_t *csc
 
 #if SUM_MODE == 2
     // linear search sorted arrays
+    // How to make this parallel?
     while (start1 < end1 && start2 < end2) {
         if (csc_row[start1] == csc_row[start2]) {
             value++;
@@ -140,6 +141,38 @@ int binary_search_cilk(uint32_t *array, uint32_t key, int32_t low, int32_t high)
 
     return 0; 
 } 
+
+/*
+ * A parallel implementation of binary search
+ *
+ * Note: Too much overhead because the range (high - low) is dynamic and in general small
+ */
+
+/* int binary_search_cilk(uint32_t *array, uint32_t key, int32_t low, int32_t high) { */
+
+/*     uint8_t numWorkers = __cilkrts_get_nworkers(); */
+/*     int32_t start = low; */
+/*     int32_t end = high; */
+/*     uint32_t step = (high - low)/numWorkers; */
+
+/*     uint8_t value = 0; */
+
+/*     cilk_for (uint8_t i = 0; i < numWorkers; i++) { */
+/*         low = start + i*step; */
+/*         high = low + step; */
+/*         if (i == numWorkers-1)  { */
+/*             high = end; */
+/*         } */
+
+/*         // implemented in v4.c */
+/*         uint8_t temp = binary_search(array, key, low, high); */
+/*         if(temp == 1) value = 1; */
+/*     } */ 
+
+/*     return value; */ 
+/* } */ 
+
+
 
 /*
  * Sparse symmetric matrix vector multiplication 

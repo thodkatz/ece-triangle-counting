@@ -42,7 +42,7 @@ void v3_openmp(uint64_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const u
         if (tid == 0) printf("The numbers of threads are %d\n", omp_get_num_threads());
 
         //#pragma omp  for reduction(+:count, vertices[:n]) seg fault
-        #pragma omp  for reduction(+:count)
+        #pragma omp  for reduction(+:count) schedule(dynamic)
         for (uint32_t i = 0; i < n; i++) {
             for (uint32_t m = csc_col[i]; m < csc_col[i+1]; m++) {
                 for (uint32_t k = m + 1; k < csc_col[i+1]; k++) {
