@@ -20,7 +20,7 @@
  * n: Rows/columns 
  */
 
-#define NUM_THREADS 16
+#define NUM_THREADS 8
 
 void v3_openmp(uint64_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, const uint32_t n) {
     printf("\n----------Version 3 OpenMP is called----------\n");
@@ -41,10 +41,10 @@ void v3_openmp(uint64_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const u
         int tid = omp_get_thread_num();
         if (tid == 0) printf("The numbers of threads are %d\n", omp_get_num_threads());
 
-        #pragma omp  for reduction(+:count, vertices[:n])
+        //#pragma omp  for reduction(+:count, vertices[:n]) seg fault
+        #pragma omp  for reduction(+:count)
         for (uint32_t i = 0; i < n; i++) {
             for (uint32_t m = csc_col[i]; m < csc_col[i+1]; m++) {
-                if (csc_row[m] == i) continue; // ignore elements in diagonal
                 for (uint32_t k = m + 1; k < csc_col[i+1]; k++) {
                     for (uint32_t p = csc_col[csc_row[m]]; p < csc_col[csc_row[m]+1]; p++) {
                         if (csc_row[p] == csc_row[k]) {

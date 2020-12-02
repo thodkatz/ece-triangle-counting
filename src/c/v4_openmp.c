@@ -1,10 +1,6 @@
 #include "include/main.h"
-#include "include/v4_cilk.h"
-#include <cilk/cilk.h>
-#include <cilk/cilk_api.h>
-#include <cilk/reducer_opadd.h>
-#include <cilk/reducer_string.h>
-#include <cilk/reducer_list.h>
+#include "include/v4_openmp.h"
+#include <omp.h>
 #include <vector>
 
 /*
@@ -13,7 +9,7 @@
  */
 #define SUM_MODE 1
 
-#define NWORKERS "4"
+#define NUM_THREADS 8
 
 extern void print_csr(uint32_t *, uint32_t *, uint32_t, uint32_t);
 
@@ -26,9 +22,9 @@ extern int binary_search(uint32_t*, uint32_t, int32_t, int32_t);
  * The down triagonal will be used to walk only the half matrix
  *
  */
-void v4_cilk(uint64_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_complete, uint32_t *csc_row_down, uint32_t *csc_col_down,
+void v4_openmp(uint64_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_complete, uint32_t *csc_row_down, uint32_t *csc_col_down,
             const uint32_t nnz_complete, const uint32_t n) {
-    printf("\n----------Version 4 Cilk is called----------\n");
+    printf("\n----------Version 4 OpenMP is called----------\n");
 
 
     struct timespec tic;
@@ -37,30 +33,31 @@ void v4_cilk(uint64_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_c
     printf("Tic: %lu seconds and %lu nanoseconds\n", tic.tv_sec, tic.tv_nsec);
 
 
-    __cilkrts_end_cilk();
-    if (0!= __cilkrts_set_param("nworkers", NWORKERS))
-    {
-        printf("Failed to set worker count\n");
-    }
-
-    uint8_t numWorkers = __cilkrts_get_nworkers();
-    printf("Numbers of workers: %d\n", numWorkers);
-
     uint32_t *values = (uint32_t*)malloc(nnz_complete/2 * sizeof(uint32_t));
 
+    omp_set_num_threads(NUM_THREADS);
 
-    cilk_for (uint32_t i = 0; i < n; i++) {
-        cilk_for (uint32_t j = csc_col_down[i]; j < csc_col_down[i+1]; j++) {
+    int tid = 0;
+    #pragma omp parallel
+    {
+        tid = omp_get_thread_num();
+        if (tid == 0) {
+            printf("The number of threads are : %d\n", omp_get_num_threads());
+        }
+        #pragma omp for schedule(dynamic) 
+        for (uint32_t i = 0; i < n; i++) {
+            for (uint32_t j = csc_col_down[i]; j < csc_col_down[i+1]; j++) {
 
-            uint32_t c = csc_row_down[j];
-            uint32_t product = sum_common_cilk(i, c, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete);
-            values[j] = product;
+                uint32_t c = csc_row_down[j];
+                uint32_t product = sum_common_openmp(i, c, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete);
+                values[j] = product;
+            }
         }
     }
 
 
     // this function takes a little time. Not worthy for parallelism
-    spmv_cilk(vertices, csc_row_down, csc_col_down, values, (nnz_complete/2), n);
+    spmv_openmp(vertices, csc_row_down, csc_col_down, values, (nnz_complete/2), n);
 
     free(values);
 
@@ -80,7 +77,7 @@ void v4_cilk(uint64_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_c
 /*
  * Returns the sum of the common elements of a symmetric csc matrix for two nodes
  */
-uint32_t sum_common_cilk(uint32_t i,uint32_t j, uint32_t *csc_row, uint32_t *csc_col) {
+uint32_t sum_common_openmp(uint32_t i,uint32_t j, uint32_t *csc_row, uint32_t *csc_col) {
     
     uint32_t value = 0;
 
@@ -97,12 +94,12 @@ uint32_t sum_common_cilk(uint32_t i,uint32_t j, uint32_t *csc_row, uint32_t *csc
     // iterate the elements of the smaller one and use binary search for the bigger one
     if (diff1 <= diff2) {
         for (uint32_t k = start1; k < end1; k++)
-            value += binary_search_cilk((uint32_t*)csc_row, csc_row[k], (int32_t)start2, (int32_t)end2 - 1);
+            value += binary_search_openmp((uint32_t*)csc_row, csc_row[k], (int32_t)start2, (int32_t)end2 - 1);
     }
         
     if (diff2 < diff1) {
         for (uint32_t k = start2; k < end2; k++)
-            value += binary_search_cilk((uint32_t*)csc_row, csc_row[k], (int32_t)start1, (int32_t)end1 - 1);
+            value += binary_search_openmp((uint32_t*)csc_row, csc_row[k], (int32_t)start1, (int32_t)end1 - 1);
     }
 #endif
 
@@ -123,7 +120,7 @@ uint32_t sum_common_cilk(uint32_t i,uint32_t j, uint32_t *csc_row, uint32_t *csc
 }
 
 // high should be signed!!
-int binary_search_cilk(uint32_t *array, uint32_t key, int32_t low, int32_t high) {
+int binary_search_openmp(uint32_t *array, uint32_t key, int32_t low, int32_t high) {
 
     if (high >= low) { 
         int32_t mid = low + (high - low) / 2; 
@@ -132,9 +129,9 @@ int binary_search_cilk(uint32_t *array, uint32_t key, int32_t low, int32_t high)
             return 1; 
   
         if (array[mid] > key) 
-            return binary_search_cilk(array, key, low, mid-1); 
+            return binary_search_openmp(array, key, low, mid-1); 
   
-        return binary_search_cilk(array, key, mid + 1, high); 
+        return binary_search_openmp(array, key, mid + 1, high); 
     } 
   
 
@@ -147,7 +144,7 @@ int binary_search_cilk(uint32_t *array, uint32_t key, int32_t low, int32_t high)
  * We divide the values by two to find the correct number of triangles.
  *
  */
-void spmv_cilk(uint64_t *y, uint32_t *csc_row, uint32_t *csc_col, uint32_t *values, const uint32_t nnz, const uint32_t n) {
+void spmv_openmp(uint64_t *y, uint32_t *csc_row, uint32_t *csc_col, uint32_t *values, const uint32_t nnz, const uint32_t n) {
 
     // x vector will be always 1, so change x -> 1
     for(uint32_t i = 0; i<n; i++) {
@@ -157,6 +154,6 @@ void spmv_cilk(uint64_t *y, uint32_t *csc_row, uint32_t *csc_col, uint32_t *valu
         }
     }
 
-    cilk_for (uint32_t i = 0; i < n; i++) y[i] /= 2;
+    for (uint32_t i = 0; i < n; i++) y[i] /= 2;
         
 }
