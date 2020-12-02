@@ -40,11 +40,11 @@ void v3_cilk(uint64_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const uin
     printf("Tic: %lu seconds and %lu nanoseconds\n", tic.tv_sec, tic.tv_nsec);
 
     // cilkrts set param doesnt work with clang
-    __cilkrts_end_cilk();
-    if (0!= __cilkrts_set_param("nworkers", NWORKERS))
-    {
-        printf("Failed to set worker count\n");
-    }
+    /* __cilkrts_end_cilk(); */
+    /* if (0!= __cilkrts_set_param("nworkers", NWORKERS)) */
+    /* { */
+    /*     printf("Failed to set worker count\n"); */
+    /* } */
 
     int numWorkers = __cilkrts_get_nworkers();
     printf("Numbers of workers: %d\n", numWorkers);
@@ -61,7 +61,7 @@ void v3_cilk(uint64_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const uin
     //uint64_t vertices_cilk[n][numWorkers]; // seg fault
 
     cilk_for (uint32_t i = 0; i < n; i++) {
-        for (uint32_t m = csc_col[i]; m < csc_col[i+1] - 1; m++) {
+        cilk_for (uint32_t m = csc_col[i]; m < csc_col[i+1] - 1; m++) {
             cilk_for (uint32_t k = m + 1; k < csc_col[i+1]; k++) {
                 for (uint32_t p = csc_col[csc_row[m]]; p < csc_col[csc_row[m]+1]; p++) {
                     if (csc_row[p] == csc_row[k]) {

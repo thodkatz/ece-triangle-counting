@@ -21,7 +21,7 @@
  * n: Rows/columns 
  */
 
-#define NUM_THREADS 16
+#define NUM_THREADS 8
 
 void v3_openmp_playground(uint64_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, const uint32_t n) {
     printf("\n----------Version 3 OpenMP Playground is called----------\n");

@@ -11,6 +11,7 @@ void v2(uint64_t*, int*, const uint32_t);
 void v3(uint64_t*, uint32_t*, uint32_t*, const uint32_t, const uint32_t);
 void v3_pre_cilk(uint64_t*, uint32_t*, uint32_t*, const uint32_t, const uint32_t);
 void v4(uint64_t*, uint32_t*, uint32_t*, uint32_t*, uint32_t*, const uint32_t, const uint32_t);
+void v4_op(uint64_t*, uint32_t*, uint32_t*, uint32_t*, uint32_t*, const uint32_t, const uint32_t);
 
 
 double diff_time(struct timespec, struct timespec);

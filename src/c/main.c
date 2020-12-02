@@ -12,7 +12,7 @@
  * 2 --> openmp
  * 3 --> pthreads
  */
-#define MODE 2
+#define MODE 0
 
 # if MODE == 1
 #include "include/v3_cilk.h"
@@ -86,13 +86,13 @@ int main(int argc, char *argv[]) {
 
 
     vertices = (uint64_t*)calloc(nodes, sizeof(uint64_t));
-    v1((uint64_t*)vertices, (int *)adjacency, nodes);
+    //v1((uint64_t*)vertices, (int *)adjacency, nodes);
     //print_vertix(vertices, nodes);
     free(vertices);
     vertices = NULL;
 
     vertices = (uint64_t*)calloc(nodes, sizeof(uint64_t));
-    v2((uint64_t*)vertices, (int *)adjacency, nodes);
+    //v2((uint64_t*)vertices, (int *)adjacency, nodes);
     //print_vertix(vertices, nodes);
     free(vertices);
     vertices = NULL;
@@ -179,6 +179,12 @@ int main(int argc, char *argv[]) {
 
     vertices = (uint64_t*)calloc(n, sizeof(uint64_t));
     v4((uint64_t*)vertices, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete, csc_row_low, csc_col_low, nnz_complete, n);
+    //print_vertix(vertices, n);
+    free(vertices);
+    vertices = NULL;
+
+    vertices = (uint64_t*)calloc(n, sizeof(uint64_t));
+    v4_op((uint64_t*)vertices, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete, csc_row_low, csc_col_low, nnz_complete, n);
     //print_vertix(vertices, n);
     free(vertices);
     vertices = NULL;

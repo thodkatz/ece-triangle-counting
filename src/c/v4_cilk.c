@@ -37,11 +37,11 @@ void v4_cilk(uint64_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_c
     printf("Tic: %lu seconds and %lu nanoseconds\n", tic.tv_sec, tic.tv_nsec);
 
 
-    __cilkrts_end_cilk();
-    if (0!= __cilkrts_set_param("nworkers", NWORKERS))
-    {
-        printf("Failed to set worker count\n");
-    }
+    /* __cilkrts_end_cilk(); */
+    /* if (0!= __cilkrts_set_param("nworkers", NWORKERS)) */
+    /* { */
+    /*     printf("Failed to set worker count\n"); */
+    /* } */
 
     uint8_t numWorkers = __cilkrts_get_nworkers();
     printf("Numbers of workers: %d\n", numWorkers);
@@ -59,7 +59,7 @@ void v4_cilk(uint64_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_c
     }
 
 
-    // this function takes a little time. Not worthy for parallelism
+    // Not worthy for parallelism
     spmv_cilk(vertices, csc_row_down, csc_col_down, values, (nnz_complete/2), n);
 
     free(values);
@@ -157,6 +157,7 @@ void spmv_cilk(uint64_t *y, uint32_t *csc_row, uint32_t *csc_col, uint32_t *valu
         }
     }
 
+    // doesnt change much the cilk here
     cilk_for (uint32_t i = 0; i < n; i++) y[i] /= 2;
         
 }

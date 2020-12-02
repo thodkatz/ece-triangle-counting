@@ -8,7 +8,7 @@
 #define SUM_MODE 1
 
 extern void print_csr(uint32_t *, uint32_t *, uint32_t, uint32_t);
-void spmv(uint64_t*, uint32_t*, uint32_t*, std::vector<uint32_t>&, const uint32_t, const uint32_t);
+void spmv(uint64_t*, uint32_t*, uint32_t*, uint32_t*, const uint32_t, const uint32_t);
 int binary_search (uint32_t*, uint32_t, int32_t, int32_t);
 uint32_t sum_common(uint32_t, uint32_t, uint32_t*, uint32_t*);
 
@@ -23,7 +23,7 @@ void v4(uint64_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_comple
             const uint32_t nnz_complete, const uint32_t n) {
     printf("\n----------Version 4 is called----------\n");
 
-    std::vector<uint32_t> values;
+    uint32_t *values = (uint32_t*)malloc(nnz_complete/2 * sizeof(uint32_t));
 
     struct timespec tic;
     struct timespec toc;
@@ -34,7 +34,7 @@ void v4(uint64_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_comple
         for (uint32_t j = csc_col_low[i]; j < csc_col_low[i+1]; j++) {
 
             uint32_t c = csc_row_low[j];
-            values.push_back(sum_common(i, c, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete));
+            values[j] = sum_common(i, c, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete);
         }
     }
 
@@ -99,7 +99,7 @@ uint32_t sum_common(uint32_t i,uint32_t j, uint32_t *csc_row, uint32_t *csc_col)
 }
 
 // high should be signed!!
-int binary_search (uint32_t *array, uint32_t key, int32_t low, int32_t high) {
+int binary_search(uint32_t *array, uint32_t key, int32_t low, int32_t high) {
 
 
     if (high >= low) { 
@@ -124,7 +124,7 @@ int binary_search (uint32_t *array, uint32_t key, int32_t low, int32_t high) {
  * We divide the values by two to find the correct number of triangles.
  *
  */
-void spmv(uint64_t *y, uint32_t *csc_row, uint32_t *csc_col, std::vector<uint32_t>& values, const uint32_t nnz, const uint32_t n) {
+void spmv(uint64_t *y, uint32_t *csc_row, uint32_t *csc_col, uint32_t *values, const uint32_t nnz, const uint32_t n) {
 
     // x vector will be always 1, so change x -> 1
     for(uint32_t i = 0; i<n; i++) {
