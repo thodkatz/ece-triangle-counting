@@ -126,7 +126,7 @@ int main(int argc, char *argv[]) {
     //print_csr(csc_row_low, csc_col_low, nnz, n);
     
     vertices = (uint32_t*)calloc(n, sizeof(uint32_t));
-    //v3((uint32_t*)vertices, (uint32_t*)csc_row_low, (uint32_t*)csc_col_low, nnz, n);
+    v3((uint32_t*)vertices, (uint32_t*)csc_row_low, (uint32_t*)csc_col_low, nnz, n);
     //print_vertix(vertices, n);
     free(vertices);
     vertices = NULL;
@@ -146,7 +146,7 @@ int main(int argc, char *argv[]) {
 
 #elif MODE == 2
     vertices = (uint32_t*)calloc(n, sizeof(uint32_t));
-    v3_openmp((uint32_t*)vertices, (uint32_t*)csc_row_low, (uint32_t*)csc_col_low, nnz, n); // this is way slow
+    v3_openmp((uint32_t*)vertices, (uint32_t*)csc_row_low, (uint32_t*)csc_col_low, nnz, n); // seg fault 
     //print_vertix(vertices, n);
     free(vertices);
     vertices = NULL;
