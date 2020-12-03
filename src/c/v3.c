@@ -21,9 +21,9 @@
  * n: Rows/columns 
  */
 
-void v3(uint64_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, const uint32_t n) {
+void v3(uint32_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, const uint32_t n) {
     printf("\n----------Version 3 is called----------\n");
-    uint64_t count = 0;
+    uint32_t count = 0;
 
     struct timespec tic;
     struct timespec toc;

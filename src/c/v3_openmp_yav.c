@@ -23,12 +23,12 @@
 
 #define NUM_THREADS 8
 
-void v3_openmp_playground(uint64_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, const uint32_t n) {
+void v3_openmp_playground(uint32_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, const uint32_t n) {
     printf("\n----------Version 3 OpenMP Playground is called----------\n");
 
 
 
-    uint64_t count = 0;
+    uint32_t count = 0;
 
     struct timespec tic;
     struct timespec toc;
@@ -46,9 +46,9 @@ void v3_openmp_playground(uint64_t *vertices, uint32_t *csc_row, uint32_t *csc_c
             printf("The number of threads are : %d\n", omp_get_num_threads());
         }
 
-        uint64_t count_openmp = 0; // if it not initialized it is not working. It makes sense, because you are increamenting this value
-        // uint64_t vertices_openmp[n] = {0}; // this will produce a seg fault
-        uint64_t* vertices_openmp = (uint64_t*)calloc(n, sizeof(uint64_t)); // this will not produce seg fault but bad performance
+        uint32_t count_openmp = 0; // if it not initialized it is not working. It makes sense, because you are increamenting this value
+        // uint32_t vertices_openmp[n] = {0}; // this will produce a seg fault
+        uint32_t* vertices_openmp = (uint64_t*)calloc(n, sizeof(uint64_t)); // this will not produce seg fault but bad performance
 
         #pragma omp for schedule(dynamic) nowait
         for (uint32_t i = 0; i < n; i++) {

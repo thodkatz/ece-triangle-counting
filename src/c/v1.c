@@ -4,9 +4,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void v1(uint64_t *vertices, int *adjacency, const uint32_t nodes) {
+void v1(uint32_t *vertices, int *adjacency, const uint32_t nodes) {
     printf("\n----------Version 1 is called----------\n");
-    uint64_t count = 0;
+    uint32_t count = 0;
 
     struct timespec tic;
     struct timespec toc;

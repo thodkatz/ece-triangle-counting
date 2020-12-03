@@ -22,11 +22,11 @@
 
 #define NUM_THREADS 8
 
-void v3_openmp(uint64_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, const uint32_t n) {
+void v3_openmp(uint32_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, const uint32_t n) {
     printf("\n----------Version 3 OpenMP is called----------\n");
 
 
-    uint64_t count = 0;
+    uint32_t count = 0;
 
     struct timespec tic;
     struct timespec toc;
@@ -37,14 +37,19 @@ void v3_openmp(uint64_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const u
     omp_set_num_threads(NUM_THREADS);
 
 
-    uint64_t* vertices_openmp = (uint64_t*)calloc(n, sizeof(uint64_t)); // this will not produce seg fault but bad performance
-    #pragma omp parallel
+    uint32_t* vertices_openmp = (uint64_t*)calloc(n, sizeof(uint64_t)); // this will not produce seg fault but bad performance
+    #pragma omp parallel reduction(+:count, vertices_openmp[:n]) 
     {
         int tid = omp_get_thread_num();
         if (tid == 0) printf("The numbers of threads are %d\n", omp_get_num_threads());
+        #pragma omp single 
+        {
+            printf("The number of available procs are: %d\n", omp_get_num_procs());
+            printf("The maximum number of threads are: %d\n", omp_get_max_threads);
+        }
 
         //#pragma omp  for reduction(+:count, vertices[:n]) seg fault, because vertices was global var maybe
-        #pragma omp  for reduction(+:count, vertices_openmp[:n]) schedule(dynamic) 
+        #pragma omp  parallel for schedule(dynamic) reduction(+:count, vertices_openmp[:n])
         for (uint32_t i = 0; i < n; i++) {
             for (uint32_t m = csc_col[i]; m < csc_col[i+1]; m++) {
                 for (uint32_t k = m + 1; k < csc_col[i+1]; k++) {

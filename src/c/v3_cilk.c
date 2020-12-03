@@ -27,12 +27,12 @@
 
 #define NWORKERS "4"
 
-void v3_cilk(uint64_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, const uint32_t n) {
+void v3_cilk(uint32_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, const uint32_t n) {
     printf("\n----------Version 3 Cilk is called----------\n");
 
 
 
-    uint64_t count = 0;
+    uint32_t count = 0;
 
     struct timespec tic;
     struct timespec toc;
@@ -40,11 +40,11 @@ void v3_cilk(uint64_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const uin
     printf("Tic: %lu seconds and %lu nanoseconds\n", tic.tv_sec, tic.tv_nsec);
 
     // cilkrts set param doesnt work with clang
-    /* __cilkrts_end_cilk(); */
-    /* if (0!= __cilkrts_set_param("nworkers", NWORKERS)) */
-    /* { */
-    /*     printf("Failed to set worker count\n"); */
-    /* } */
+    __cilkrts_end_cilk();
+    if (0!= __cilkrts_set_param("nworkers", NWORKERS))
+    {
+        printf("Failed to set worker count\n");
+    }
 
     int numWorkers = __cilkrts_get_nworkers();
     printf("Numbers of workers: %d\n", numWorkers);
@@ -57,8 +57,8 @@ void v3_cilk(uint64_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const uin
     std::list<unsigned int> indeces; // wont work in parallel
     //std::list<unsigned int>::iterator it;
 
-    //uint64_t cilk_count_mem[numWorkers] = {};
-    //uint64_t vertices_cilk[n][numWorkers]; // seg fault
+    //uint32_t cilk_count_mem[numWorkers] = {};
+    //uint32_t vertices_cilk[n][numWorkers]; // seg fault
 
     cilk_for (uint32_t i = 0; i < n; i++) {
         cilk_for (uint32_t m = csc_col[i]; m < csc_col[i+1] - 1; m++) {
@@ -86,7 +86,7 @@ void v3_cilk(uint64_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const uin
     // the total numbers of triangle is the length of the list divided by three
 
 
-    /* uint64_t count_mem = 0; */
+    /* uint32_t count_mem = 0; */
     /* for (int i=0; i<numWorkers;i++) { */
     /*     count_mem += cilk_count_mem[i]; */
     /* } */

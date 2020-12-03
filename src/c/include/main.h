@@ -6,12 +6,12 @@
 #include <time.h>
 #include <stdlib.h>
 
-void v1(uint64_t*, int*, const uint32_t);
-void v2(uint64_t*, int*, const uint32_t);
-void v3(uint64_t*, uint32_t*, uint32_t*, const uint32_t, const uint32_t);
-void v3_pre_cilk(uint64_t*, uint32_t*, uint32_t*, const uint32_t, const uint32_t);
-void v4(uint64_t*, uint32_t*, uint32_t*, uint32_t*, uint32_t*, const uint32_t, const uint32_t);
-void v4_op(uint64_t*, uint32_t*, uint32_t*, uint32_t*, uint32_t*, const uint32_t, const uint32_t);
+void v1(uint32_t*, int*, const uint32_t);
+void v2(uint32_t*, int*, const uint32_t);
+void v3(uint32_t*, uint32_t*, uint32_t*, const uint32_t, const uint32_t);
+void v3_pre_cilk(uint32_t*, uint32_t*, uint32_t*, const uint32_t, const uint32_t);
+void v4(uint32_t*, uint32_t*, uint32_t*, uint32_t*, uint32_t*, const uint32_t, const uint32_t);
+void v4_op(uint32_t*, uint32_t*, uint32_t*, uint32_t*, uint32_t*, const uint32_t, const uint32_t);
 
 
 double diff_time(struct timespec, struct timespec);

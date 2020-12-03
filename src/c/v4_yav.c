@@ -11,7 +11,7 @@ extern void print_csr(uint32_t *, uint32_t *, uint32_t, uint32_t);
 extern int binary_search (uint32_t*, uint32_t, int32_t, int32_t);
 extern uint32_t sum_common(uint32_t, uint32_t, uint32_t*, uint32_t*);
 
-void spmv_op(uint64_t*, std::vector<uint32_t>&, uint32_t*, std::vector<uint32_t>&, const uint32_t, const uint32_t);
+void spmv_yav(uint32_t*, std::vector<uint32_t>&, uint32_t*, std::vector<uint32_t>&, const uint32_t, const uint32_t);
 
 /*
  * Input: the adjacency matrix in a csc scheme for both the complete symmetric and the lower triangular
@@ -19,7 +19,7 @@ void spmv_op(uint64_t*, std::vector<uint32_t>&, uint32_t*, std::vector<uint32_t>
  * The lower triangular will be used to walk only the half matrix
  *
  */
-void v4_op(uint64_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_complete, uint32_t *csc_row_low, uint32_t *csc_col_low,
+void v4_yav(uint32_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_complete, uint32_t *csc_row_low, uint32_t *csc_col_low,
             const uint32_t nnz_complete, const uint32_t n) {
     printf("\n----------Version 4 OP is called----------\n");
 
@@ -50,7 +50,7 @@ void v4_op(uint64_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_com
         csc_col_filtered[i+1] = nnz_filtered;
     }
 
-    spmv_op(vertices, csc_row_filtered, csc_col_filtered, values, nnz_filtered, n);
+    spmv_yav(vertices, csc_row_filtered, csc_col_filtered, values, nnz_filtered, n);
 
 
     uint32_t count = 0;
@@ -71,7 +71,7 @@ void v4_op(uint64_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_com
  * We divide the values by two to find the correct number of triangles.
  *
  */
-void spmv_op(uint64_t *y, std::vector<uint32_t> &csc_row, uint32_t *csc_col, std::vector<uint32_t> &values, const uint32_t nnz, const uint32_t n) {
+void spmv_yav(uint32_t *y, std::vector<uint32_t> &csc_row, uint32_t *csc_col, std::vector<uint32_t> &values, const uint32_t nnz, const uint32_t n) {
 
     // x vector will be always 1, so change x -> 1
     for(uint32_t i = 0; i<n; i++) {

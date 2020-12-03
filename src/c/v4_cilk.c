@@ -26,7 +26,7 @@ extern int binary_search(uint32_t*, uint32_t, int32_t, int32_t);
  * The down triagonal will be used to walk only the half matrix
  *
  */
-void v4_cilk(uint64_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_complete, uint32_t *csc_row_down, uint32_t *csc_col_down,
+void v4_cilk(uint32_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_complete, uint32_t *csc_row_down, uint32_t *csc_col_down,
             const uint32_t nnz_complete, const uint32_t n) {
     printf("\n----------Version 4 Cilk is called----------\n");
 
@@ -180,7 +180,7 @@ int binary_search_cilk(uint32_t *array, uint32_t key, int32_t low, int32_t high)
  * We divide the values by two to find the correct number of triangles.
  *
  */
-void spmv_cilk(uint64_t *y, uint32_t *csc_row, uint32_t *csc_col, uint32_t *values, const uint32_t nnz, const uint32_t n) {
+void spmv_cilk(uint32_t *y, uint32_t *csc_row, uint32_t *csc_col, uint32_t *values, const uint32_t nnz, const uint32_t n) {
 
     // x vector will be always 1, so change x -> 1
     for(uint32_t i = 0; i<n; i++) {
