@@ -12,7 +12,7 @@
  * 2 --> openmp
  * 3 --> pthreads
  */
-#define MODE 0
+#define MODE 2
 
 # if MODE == 1
 #include "include/v3_cilk.h"
@@ -125,33 +125,33 @@ int main(int argc, char *argv[]) {
     coo2csc(csc_row_low, csc_col_low, coo_row, coo_col, nnz, n, isOneBased);
     //print_csr(csc_row_low, csc_col_low, nnz, n);
     
-    vertices = (uint32_t*)calloc(n, sizeof(uint64_t));
-    v3((uint32_t*)vertices, (uint32_t*)csc_row_low, (uint32_t*)csc_col_low, nnz, n);
+    vertices = (uint32_t*)calloc(n, sizeof(uint32_t));
+    //v3((uint32_t*)vertices, (uint32_t*)csc_row_low, (uint32_t*)csc_col_low, nnz, n);
     //print_vertix(vertices, n);
     free(vertices);
     vertices = NULL;
 
-    vertices = (uint32_t*)calloc(n, sizeof(uint64_t));
+    vertices = (uint32_t*)calloc(n, sizeof(uint32_t));
     v3_pre_cilk((uint32_t*)vertices, (uint32_t*)csc_row_low, (uint32_t*)csc_col_low, nnz, n);
     //print_vertix(vertices, n);
     free(vertices);
     vertices = NULL;
     
 #if MODE == 1
-    vertices = (uint32_t*)calloc(n, sizeof(uint64_t));
-    //v3_cilk((uint32_t*)vertices, (uint32_t*)csc_row_low, (uint32_t*)csc_col_low, nnz, n);
+    vertices = (uint32_t*)calloc(n, sizeof(uint32_t));
+    v3_cilk((uint32_t*)vertices, (uint32_t*)csc_row_low, (uint32_t*)csc_col_low, nnz, n);
     //print_vertix(vertices, n);
     free(vertices);
     vertices = NULL;
 
 #elif MODE == 2
-    vertices = (uint32_t*)calloc(n, sizeof(uint64_t));
+    vertices = (uint32_t*)calloc(n, sizeof(uint32_t));
     v3_openmp((uint32_t*)vertices, (uint32_t*)csc_row_low, (uint32_t*)csc_col_low, nnz, n); // this is way slow
     //print_vertix(vertices, n);
     free(vertices);
     vertices = NULL;
 
-    vertices = (uint32_t*)calloc(n, sizeof(uint64_t));
+    vertices = (uint32_t*)calloc(n, sizeof(uint32_t));
     v3_openmp_yav((uint32_t*)vertices, (uint32_t*)csc_row_low, (uint32_t*)csc_col_low, nnz, n);
     //print_vertix(vertices, n);
     free(vertices);
@@ -177,27 +177,27 @@ int main(int argc, char *argv[]) {
 
     //print_csr(csc_row_complete, csc_col_complete, nnz_complete, n);
 
-    vertices = (uint32_t*)calloc(n, sizeof(uint64_t));
+    vertices = (uint32_t*)calloc(n, sizeof(uint32_t));
     v4((uint32_t*)vertices, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete, csc_row_low, csc_col_low, nnz_complete, n);
     //print_vertix(vertices, n);
     free(vertices);
     vertices = NULL;
 
-    vertices = (uint32_t*)calloc(n, sizeof(uint64_t));
+    vertices = (uint32_t*)calloc(n, sizeof(uint32_t));
     //v4_yav((uint32_t*)vertices, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete, csc_row_low, csc_col_low, nnz_complete, n);
     //print_vertix(vertices, n);
     free(vertices);
     vertices = NULL;
 
 #if MODE == 1
-    vertices = (uint32_t*)calloc(n, sizeof(uint64_t));
+    vertices = (uint32_t*)calloc(n, sizeof(uint32_t));
     v4_cilk((uint32_t*)vertices, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete, csc_row_low, csc_col_low, nnz_complete, n);
     //print_vertix(vertices, n);
     free(vertices);
     vertices = NULL;
 
 #elif MODE == 2
-    vertices = (uint32_t*)calloc(n, sizeof(uint64_t));
+    vertices = (uint32_t*)calloc(n, sizeof(uint32_t));
     v4_openmp((uint32_t*)vertices, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete, csc_row_low, csc_col_low, nnz_complete, n);
     //print_vertix(vertices, n);
     free(vertices);

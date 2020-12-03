@@ -37,7 +37,7 @@ void v3_openmp(uint32_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const u
     omp_set_num_threads(NUM_THREADS);
 
 
-    uint32_t* vertices_openmp = (uint64_t*)calloc(n, sizeof(uint64_t)); // this will not produce seg fault but bad performance
+    uint32_t *vertices_openmp = (uint32_t*)calloc(n, sizeof(uint32_t)); 
     #pragma omp parallel reduction(+:count, vertices_openmp[:n]) 
     {
         int tid = omp_get_thread_num();

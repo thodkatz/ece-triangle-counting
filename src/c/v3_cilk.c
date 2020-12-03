@@ -27,6 +27,15 @@
 
 #define NWORKERS "4"
 
+/*
+ * BINARY = 0 -> linear search
+ * BINARY = 1 -> binary search
+ */
+#define BINARY 1
+
+
+extern uint32_t binary_search_yav(uint32_t* array, uint32_t key, int32_t low, int32_t high);
+
 void v3_cilk(uint32_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, const uint32_t n) {
     printf("\n----------Version 3 Cilk is called----------\n");
 
@@ -60,26 +69,37 @@ void v3_cilk(uint32_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const uin
     //uint32_t cilk_count_mem[numWorkers] = {};
     //uint32_t vertices_cilk[n][numWorkers]; // seg fault
 
+    //uint32_t ret = 0;
     cilk_for (uint32_t i = 0; i < n; i++) {
         cilk_for (uint32_t m = csc_col[i]; m < csc_col[i+1] - 1; m++) {
-            cilk_for (uint32_t k = m + 1; k < csc_col[i+1]; k++) {
+            for (uint32_t k = m + 1; k < csc_col[i+1]; k++) {
+                #if BINARY == 1
+                uint32_t ret = 0;
+                ret = binary_search_yav(csc_row, csc_row[k], csc_col[csc_row[m]],  csc_col[csc_row[m]+1] - 1);
+                if (ret != -1) {
+                #elif BINARY == 0
                 for (uint32_t p = csc_col[csc_row[m]]; p < csc_col[csc_row[m]+1]; p++) {
                     if (csc_row[p] == csc_row[k]) {
+                #endif
                         count++; // race bug
+                        cilk_count++;
                         //cilk_count_mem[currWorker]++; // should work
 
                         // how to keep track of the indeces? Are lists parallel safe? No check and act though
                         // eventually stl lists wont work. Use reducers
                         cilk_list->push_back(i);
                         cilk_list->push_back(csc_row[m]);
+                        #if BINARY == 1
+                        cilk_list->push_back(csc_row[ret]);
+                        #elif BINARY == 0
                         cilk_list->push_back(csc_row[p]);
-                        cilk_count++;
                     }
+                        #endif
                 }
             }
         }
     }
-    indeces = cilk_list.get_value() ;
+    indeces = cilk_list.get_value();
     for (std::list<unsigned int>::iterator i = indeces.begin(); i != indeces.end(); i++) {
         vertices[*i]++;
     }

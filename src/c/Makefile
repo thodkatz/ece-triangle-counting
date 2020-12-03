@@ -15,10 +15,10 @@ main: $(BASE_SRC)
 	$(CC) $(CFLAGS) $(BASE_SRC) -o $@ 
 
 cilk:
-	$(CILKCC2) -g $(CILK_SRC) -o main -fcilkplus #-fsanitize=cilk  
+	$(CILKCC2) -g -O3 $(CILK_SRC) -o main -fcilkplus #-fsanitize=cilk  
 
 openmp: 
-	$(CC) -O3 $(MP_SRC) -o main -fopenmp
+	$(CC) -g $(MP_SRC) -o main -fopenmp
 
 pthreads: 
 	$(CC) -O3 $(PTHREAD_SRC) -o main -lpthread
