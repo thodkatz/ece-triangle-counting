@@ -6,7 +6,7 @@ CILKCC2=g++-7
 BASE_SRC=main.c diff_time.c mm2coo.c mmio.c coo2csc.c v1.c v2.c v3.c v3_pre_cilk.c v4.c v4_yav.c merge_csc.c 
 MP_SRC=$(BASE_SRC) v3_openmp.c v3_openmp_yav.c v4_openmp.c
 CILK_SRC= $(BASE_SRC) v3_cilk.c v4_cilk.c
-PTHREAD_SRC=$(BASE_SRC) v3_pthreads.c
+PTHREAD_SRC=$(BASE_SRC) v4_pthread.c
 
 
 all: main
@@ -20,8 +20,8 @@ cilk:
 openmp: 
 	$(CC) -g -O3 $(MP_SRC) -o main -fopenmp
 
-pthreads: 
-	$(CC) -O3 $(PTHREAD_SRC) -o main -lpthread
+pthread: 
+	$(CC) -g -O3 $(PTHREAD_SRC) -o main -lpthread
 
 .PHONY: clean
 

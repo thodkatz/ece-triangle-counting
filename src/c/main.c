@@ -12,14 +12,19 @@
  * 2 --> openmp
  * 3 --> pthreads
  */
-#define MODE 2
+#define MODE 3
 
 # if MODE == 1
 #include "include/v3_cilk.h"
 #include "include/v4_cilk.h"
+
 #elif MODE == 2
 #include "include/v3_openmp.h"
 #include "include/v4_openmp.h"
+
+#elif MODE == 3
+#include "include/v4_pthread.h"
+#include <pthread.h>
 #endif
 
 
@@ -36,7 +41,7 @@ int main(int argc, char *argv[]) {
     /**********************************************************/
 
     printf("\n----------Version 1 and 2 Prerequisites----------\n");
-    const uint32_t nodes = 5; // maximum 1430
+    const uint32_t nodes = 1; 
     int adjacency[nodes][nodes] = {0};
     size_t length = sizeof(adjacency)/sizeof(adjacency[0][0]);
     printf("The length of the array is %lu and the nodes are %u\n", length, nodes);
@@ -202,6 +207,13 @@ int main(int argc, char *argv[]) {
     //print_vertix(vertices, n);
     free(vertices);
     vertices = NULL;
+
+#elif MODE == 3
+    vertices = (uint32_t*)calloc(n, sizeof(uint32_t));
+    v4_pthread((uint32_t*)vertices, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete, csc_row_low, csc_col_low, nnz_complete, n);
+    //print_vertix(vertices, n);
+    free(vertices);
+    vertices = NULL;
 #endif
     
 
@@ -215,7 +227,9 @@ int main(int argc, char *argv[]) {
     free(csc_col_complete);
     free(coo_row);
     free(coo_col);
-
+    #if MODE == 3
+    pthread_exit(NULL);
+    #endif
     return 0;
 }
 

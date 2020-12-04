@@ -7,7 +7,7 @@
  * 1 -> binary search
  * 2 -> linear search
  */
-#define SUM_MODE 1
+#define SUM_MODE 2
 
 #define NUM_THREADS 8
 
