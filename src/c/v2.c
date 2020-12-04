@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 void v2(uint32_t *vertices, int *adjacency, const uint32_t nodes) {
-    printf("\n----------Version 2 is called----------\n");
+    printf("\n----------Version 2----------\n");
     uint32_t count = 0;
 
     struct timespec tic;

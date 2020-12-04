@@ -3,7 +3,7 @@
 #include <pthread.h>
 #include <time.h>
 
-#define NUM_THREADS 8
+#define NUM_THREADS 4
 
 extern void print_csr(uint32_t *, uint32_t *, uint32_t, uint32_t);
 extern void spmv(uint32_t*, uint32_t*, uint32_t*, uint32_t*, const uint32_t, const uint32_t);
@@ -39,10 +39,8 @@ void v4_pthread(uint32_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_co
 
 
     struct timespec tic;
-    struct timespec toc;
     clock_gettime(CLOCK_MONOTONIC, &tic);
     printf("Tic: %lu seconds and %lu nanoseconds\n", tic.tv_sec, tic.tv_nsec);
-
 
     uint32_t *values = (uint32_t*)malloc(nnz_complete/2 * sizeof(uint32_t));
 
@@ -80,12 +78,13 @@ void v4_pthread(uint32_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_co
     spmv(vertices, csc_row_low, csc_col_low, values, (nnz_complete/2), n);
     free(values);
 
-
     uint32_t count = 0;
     for(uint32_t i = 0; i < n; i++) count += vertices[i];
 
+    struct timespec toc;
     clock_gettime(CLOCK_MONOTONIC, &toc);
     printf("Toc: %lu seconds and %lu nanoseconds\n", toc.tv_sec, toc.tv_nsec);
+
     double diff = diff_time(tic, toc);
     printf("Time elapsed (seconds): %0.6f\n", diff);
     
@@ -99,7 +98,9 @@ void* count_triangles(void *arg) {
     printf("Hello, I am %d\n", data->tid);
     printf("Start is %u and end is %u\n", data->start, data->end);
 
-    clock_t tic = clock();
+    struct timespec ping;
+    clock_gettime(CLOCK_MONOTONIC, &ping);
+
     for(uint32_t i = data->start; i < data->end; i++) {
         for (uint32_t j = data->csc_col_low[i]; j < data->csc_col_low[i+1]; j++) {
 
@@ -107,10 +108,13 @@ void* count_triangles(void *arg) {
             data->values[j] = sum_common(i, c, (uint32_t*)data->csc_row_complete, (uint32_t*)data->csc_col_complete);
         }
     }
-    clock_t toc = clock() - tic;
-    double elapsed = ((double)toc)/CLOCKS_PER_SEC;
     // load balancing testing
-    printf("Finished id: %d. Elapsed time: %.5f\n", data->tid, elapsed);
+    struct timespec pong;
+    clock_gettime(CLOCK_MONOTONIC, &pong);
+    double elapsed = diff_time(ping, pong);
+    printf("Finished id: %d. Elapsed time: %0.6f\n", data->tid, elapsed);
+
+
 
     pthread_exit(NULL);
 }

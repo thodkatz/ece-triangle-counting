@@ -22,7 +22,7 @@ uint32_t sum_common(uint32_t, uint32_t, uint32_t*, uint32_t*);
  */
 void v4(uint32_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_complete, uint32_t *csc_row_low, uint32_t *csc_col_low,
             const uint32_t nnz_complete, const uint32_t n) {
-    printf("\n----------Version 4 is called----------\n");
+    printf("\n----------Version 4----------\n");
 
     uint32_t *values = (uint32_t*)malloc(nnz_complete/2 * sizeof(uint32_t));
 
@@ -31,7 +31,6 @@ void v4(uint32_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_comple
     clock_gettime(CLOCK_MONOTONIC, &tic);
     printf("Tic: %lu seconds and %lu nanoseconds\n", tic.tv_sec, tic.tv_nsec);
 
-    clock_t ping = clock();
     for(uint32_t i = 0; i < n; i++) {
         for (uint32_t j = csc_col_low[i]; j < csc_col_low[i+1]; j++) {
 
@@ -39,10 +38,6 @@ void v4(uint32_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_comple
             values[j] = sum_common(i, c, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete);
         }
     }
-    clock_t pong = clock() - ping;
-    double elapsed = ((double)pong)/CLOCKS_PER_SEC;
-    printf("Finished master thread. Elapsed time using clock_t (without spmv): %.5f\n", elapsed);
-
 
     spmv(vertices, csc_row_low, csc_col_low, values, (nnz_complete/2), n);
     free(values);

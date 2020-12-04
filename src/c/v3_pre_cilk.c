@@ -6,11 +6,11 @@ uint32_t binary_search_yav(uint32_t* array, uint32_t key, int32_t low, int32_t h
 
 
 /*
- * Restructure v3 function, removing loop dependencies, trying to exploit parallelism
+ * Restructure v3 function, removing loop dependencies, trying to exploit parallelism. Change linear to binary search
  *
  */
 void v3_pre_cilk(uint32_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, const uint32_t n) {
-    printf("\n----------Version 3 Pre Cilk Sequential is called----------\n");
+    printf("\n----------Version 3 Pre Cilk Sequential with Binary Search----------\n");
 
     uint32_t count = 0;
 

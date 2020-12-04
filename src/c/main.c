@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
     /**********************************************************/
 
     printf("\n----------Version 1 and 2 Prerequisites----------\n");
-    const uint32_t nodes = 1; 
+    const uint32_t nodes = 2; 
     int adjacency[nodes][nodes] = {0};
     size_t length = sizeof(adjacency)/sizeof(adjacency[0][0]);
     printf("The length of the array is %lu and the nodes are %u\n", length, nodes);

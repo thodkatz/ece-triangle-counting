@@ -22,7 +22,7 @@
  */
 
 void v3(uint32_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, const uint32_t n) {
-    printf("\n----------Version 3 Sequential is called----------\n");
+    printf("\n----------Version 3 Sequential with Linear Search----------\n");
     uint32_t count = 0;
 
     struct timespec tic;

@@ -31,7 +31,7 @@
 extern uint32_t binary_search_yav(uint32_t* array, uint32_t key, int32_t low, int32_t high);
 
 void v3_openmp(uint32_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, const uint32_t n) {
-    printf("\n----------Version 3 OpenMP is called----------\n");
+    printf("\n----------Version 3 OpenMP----------\n");
 
 
     uint32_t count = 0;

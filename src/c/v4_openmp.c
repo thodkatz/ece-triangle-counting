@@ -24,7 +24,7 @@ extern int binary_search(uint32_t*, uint32_t, int32_t, int32_t);
  */
 void v4_openmp(uint32_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_complete, uint32_t *csc_row_down, uint32_t *csc_col_down,
             const uint32_t nnz_complete, const uint32_t n) {
-    printf("\n----------Version 4 OpenMP is called----------\n");
+    printf("\n----------Version 4 OpenMP----------\n");
 
 
     struct timespec tic;
