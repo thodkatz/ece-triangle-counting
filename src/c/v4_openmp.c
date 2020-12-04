@@ -9,7 +9,8 @@
  */
 #define SUM_MODE 2
 
-#define NUM_THREADS 8
+// #define NUM_THREADS 8 The setting will be done via env variable in sbatch script
+
 
 extern void print_csr(uint32_t *, uint32_t *, uint32_t, uint32_t);
 
@@ -35,7 +36,7 @@ void v4_openmp(uint32_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col
 
     uint32_t *values = (uint32_t*)malloc(nnz_complete/2 * sizeof(uint32_t));
 
-    omp_set_num_threads(NUM_THREADS);
+    //omp_set_num_threads(NUM_THREADS);
 
     int tid = 0;
     #pragma omp parallel

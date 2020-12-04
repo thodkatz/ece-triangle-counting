@@ -1,7 +1,7 @@
-CC=g++
+CC=g++ # in my machine version: 10.2.0. In hpc, 7.5.0 to be compatible with cilk
 CFLAGS=-g -O3 -Wall
 CILKCC=/usr/local/OpenCilk-9.0.1-Linux/bin/clang++
-CILKCC2=g++-7 
+CILKCC2=g++-7 # my machine (AUR package)
 
 BASE_SRC=main.c diff_time.c mm2coo.c mmio.c coo2csc.c v1.c v2.c v3.c v3_pre_cilk.c v4.c v4_yav.c merge_csc.c 
 MP_SRC=$(BASE_SRC) v3_openmp.c v3_openmp_yav.c v4_openmp.c
@@ -16,6 +16,9 @@ main: $(BASE_SRC)
 
 cilk:
 	$(CILKCC2) -g -O3 $(CILK_SRC) -o main -fcilkplus #-fsanitize=cilk  
+
+cilk_hpc:
+	$(CC) -g -O3 $(CILK_SRC) -o main -fcilkplus #-fsanitize=cilk  
 
 openmp: 
 	$(CC) -g -O3 $(MP_SRC) -o main -fopenmp

@@ -13,7 +13,7 @@
  */
 #define SUM_MODE 2
 
-#define NWORKERS "4"
+// #define NWORKERS "4". The setting will be done via env variable in sbatch script
 
 extern void print_csr(uint32_t *, uint32_t *, uint32_t, uint32_t);
 
@@ -143,6 +143,8 @@ int binary_search_cilk(uint32_t *array, uint32_t key, int32_t low, int32_t high)
 } 
 
 /*
+ * FIX ME!!
+ *
  * A parallel implementation of binary search
  *
  * Note: Too much overhead because the range (high - low) is dynamic and in general small

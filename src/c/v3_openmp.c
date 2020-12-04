@@ -20,7 +20,8 @@
  * n: Rows/columns 
  */
 
-#define NUM_THREADS 8
+//#define NUM_THREADS 8 The setting will be done via env variable in sbatch script
+
 
 /*
  * BINARY = 0 -> linear search
@@ -42,7 +43,7 @@ void v3_openmp(uint32_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const u
     printf("Tic: %lu seconds and %lu nanoseconds\n", tic.tv_sec, tic.tv_nsec);
 
     printf("The number of threads were : %d\n", omp_get_num_threads());
-    omp_set_num_threads(NUM_THREADS);
+    //omp_set_num_threads(NUM_THREADS);
 
 
     uint32_t *vertices_openmp = (uint32_t*)calloc(n, sizeof(uint32_t));  // some cases seg fault :(

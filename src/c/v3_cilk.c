@@ -25,7 +25,7 @@
  * n: Rows/columns 
  */
 
-#define NWORKERS "4"
+// #define NWORKERS "4" The setting will be done via env variable in sbatch script
 
 /*
  * BINARY = 0 -> linear search
@@ -49,11 +49,11 @@ void v3_cilk(uint32_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const uin
     printf("Tic: %lu seconds and %lu nanoseconds\n", tic.tv_sec, tic.tv_nsec);
 
     // cilkrts set param doesnt work with clang
-    __cilkrts_end_cilk();
-    if (0!= __cilkrts_set_param("nworkers", NWORKERS))
-    {
-        printf("Failed to set worker count\n");
-    }
+    /* __cilkrts_end_cilk(); */
+    /* if (0!= __cilkrts_set_param("nworkers", NWORKERS)) */
+    /* { */
+    /*     printf("Failed to set worker count\n"); */
+    /* } */
 
     int numWorkers = __cilkrts_get_nworkers();
     printf("Numbers of workers: %d\n", numWorkers);

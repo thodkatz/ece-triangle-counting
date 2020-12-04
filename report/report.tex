@@ -8,8 +8,10 @@
 \usepackage[hidelinks, colorlinks = true, urlcolor = blue]{hyperref}
 \usepackage{indentfirst}
 \usepackage{graphicx}
-\usepackage[left=1cm,right=1cm,top=2cm,bottom=2cm]{geometry}
+\usepackage[left=1cm,right=1cm,top=1cm,bottom=1cm]{geometry}
 \usepackage{lipsum}
+\usepackage{caption}
+\usepackage{subcaption}
 
 %\setlength{\parindent}{1em}
 %\setlength{\parskip}{1em}\title{Εργασία Στατιστικής}
@@ -31,13 +33,30 @@
 
 \section{Version 4 pthreads}
 
-Το \textbf{load balancing} είναι ιδιαίτερα σημαντικό. Παρατηρούμε ότι όταν διαμοιράζουμε την δουλεία με βάση το index, δεν βλέπουμε βελτίωση στην απόδοση, μιας και την περισσότερη δουλειά την κάνει μόνο ένα thread. Συνεπώς θα πρέπει να είμαστε ιδιαίτερα προσεκτικοί με το scheduling των threads. Τα ίδια συμπεράσματα μπορούσαμε να εξάγουμε και απο την openmp υλοποίηση για static scheduling. Οπότε με dynamic scheduling σε pthreads και openmp έχουμε πολύ καλύτερα αποτελέσματα... Βασική διαφορά είναι ότι σε pthreads είναι λίγο πιο δύσκολο να υλοποιηθεί (στην openmp είναι μονο ένα keyword static -> dynamic). Το πρώτο thread κάνει σχεδόν όλη την δουλειά.
+%Το \textbf{load balancing} είναι ιδιαίτερα σημαντικό. Παρατηρούμε ότι όταν διαμοιράζουμε την δουλεία με βάση το index, δεν βλέπουμε βελτίωση στην απόδοση, μιας και την περισσότερη δουλειά την κάνει μόνο ένα thread. Συνεπώς θα πρέπει να είμαστε ιδιαίτερα προσεκτικοί με το scheduling των threads. Τα ίδια συμπεράσματα μπορούσαμε να εξάγουμε και απο την openmp υλοποίηση για static scheduling. Οπότε με dynamic scheduling σε pthreads και openmp έχουμε πολύ καλύτερα αποτελέσματα... Βασική διαφορά είναι ότι σε pthreads είναι λίγο πιο δύσκολο να υλοποιηθεί (στην openmp είναι μονο ένα keyword static -> dynamic). 
+
+The more the loops are balanced, the better our static implementation will be. Για παράδειγμα, παρατηρώντας τις δύο παρακάτω εικόνες\footnote{Δεν έχει τρέξει στην συστοιχία αλλά σε προσωπικό σύστημα. FIX ME!}. το πρώτο thread κάνει σχεδόν όλη την δουλειά προκαλώντας load imbalance και επηρεάζοντας σημαντικά το speedup. Στα πλαίσια του χρονικού διαστήματος της εργασίας, λείπει μια δυναμική έκδοση των pthreads. Εικάζουμε ότι σε τέτοιες περιπτώσεις θα ήταν αρκετά πιο αποδοτική (βλέποντας και την απόκριση του schedule dynamic σε openmp υλοποίηση).
 
 \begin{figure}[h!]
-\centering
-	\includegraphics[height=.3\textheight, width=\textwidth, keepaspectratio]{assets/load_pthreads.png}
-    \caption{Load balancing pthreads, static scheduling. Matrix com-Youtube.mtx}
+     \begin{subfigure}[b]{0.45\textwidth}
+         \centering
+         \includegraphics[height=.3\textheight, width=\textwidth, keepaspectratio]{assets/load_pthreads.png}
+         \caption{Load balancing pthreads, Scheduling: static, Threads: 8. Matrix com-Youtube.mtx. 10\% speedup}
+     \end{subfigure}
+     \hfill
+     \begin{subfigure}[b]{0.45\textwidth}
+         \centering
+         \includegraphics[height=.3\textheight, width=\textwidth, keepaspectratio]{assets/load_pthreads2.png}
+         \caption{Load balancing pthreads. Scheduling: static, Threads: 8. Matrix rgg\_n\_2\_19\_s0.mtx. 50\% speedup.}
+     \end{subfigure}
 \end{figure}
 
+
+\section{Notes}
+\begin{itemize}
+    \item Αναγνώριση χρονοβόρων διαδικασιών/επαναλήψεων
+    \item Αφαίρεση εξαρτήσεων μεταξύ των επαναλήψεων (loop carrier dependency)
+    \item Is the code scalable?
+\end{itemize}
 
 \end{document}

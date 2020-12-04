@@ -3,7 +3,7 @@
 #include <pthread.h>
 #include <time.h>
 
-#define NUM_THREADS 4
+#define NUM_THREADS 8
 
 extern void print_csr(uint32_t *, uint32_t *, uint32_t, uint32_t);
 extern void spmv(uint32_t*, uint32_t*, uint32_t*, uint32_t*, const uint32_t, const uint32_t);
@@ -96,7 +96,7 @@ void* count_triangles(void *arg) {
     thread_data *data = (thread_data *)arg;
 
     printf("Hello, I am %d\n", data->tid);
-    printf("Start is %u and end is %u\n", data->start, data->end);
+    printf("For id: %d. Start is %u and end is %u\n", data->tid, data->start, data->end);
 
     struct timespec ping;
     clock_gettime(CLOCK_MONOTONIC, &ping);
