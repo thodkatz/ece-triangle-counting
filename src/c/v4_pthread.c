@@ -1,14 +1,9 @@
 #include "include/main.h"
 #include <vector>
 #include <pthread.h>
+#include <time.h>
 
-/*
- * 1 -> binary search
- * 2 -> linear search
- */
-#define SUM_MODE 1
-
-#define NUM_THREADS 4
+#define NUM_THREADS 8
 
 extern void print_csr(uint32_t *, uint32_t *, uint32_t, uint32_t);
 extern void spmv(uint32_t*, uint32_t*, uint32_t*, uint32_t*, const uint32_t, const uint32_t);
@@ -51,35 +46,36 @@ void v4_pthread(uint32_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_co
 
     uint32_t *values = (uint32_t*)malloc(nnz_complete/2 * sizeof(uint32_t));
 
-    // check return values too!
-    // you can probably combined them 
+
+    size_t stacksize;
+    pthread_attr_t atr;
+    pthread_attr_init(&atr); // this is mandatory. Otherwise you get grabage memory values
+    pthread_attr_getstacksize(&atr, &stacksize);
+    printf("Current stack size -> %d\n", stacksize);
+
+    int rc;
     pthread_t threads[NUM_THREADS];
     thread_data data[NUM_THREADS];
-    for (uint16_t i = 0; i < NUM_THREADS; i++) {
+
+        for (uint16_t i = 0; i < NUM_THREADS; i++) {
+        // init
         data[i].tid = i;
         data[i].csc_row_low = csc_row_low; 
         data[i].csc_col_low = csc_col_low; 
-        data[i].csc_row_complete = csc_col_complete; 
+        data[i].csc_row_complete = csc_row_complete; 
         data[i].csc_col_complete = csc_col_complete; 
         data[i].values = values; 
         data[i].start = i*(n/NUM_THREADS);
         data[i].end = data[i].start + n/NUM_THREADS;
         if (i == NUM_THREADS - 1) data[i].end = n;
-        pthread_create(&threads[i], NULL, count_triangles, &data[i]);
+
+        if (rc = pthread_create(&threads[i], NULL, count_triangles, &data[i]))
+            printf("Error creating thread %d\n", rc);
     }
 
     for (uint16_t i = 0; i < NUM_THREADS; i++) pthread_join(threads[i], NULL);
     //pthread_exit(NULL); //Should I? No because here will terminate the main thread
 
-
-
-    for(uint32_t i = 0; i < n; i++) {
-        for (uint32_t j = csc_col_low[i]; j < csc_col_low[i+1]; j++) {
-
-            uint32_t c = csc_row_low[j];
-            values[j] = sum_common(i, c, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete);
-        }
-    }
 
     spmv(vertices, csc_row_low, csc_col_low, values, (nnz_complete/2), n);
     free(values);
@@ -103,6 +99,7 @@ void* count_triangles(void *arg) {
     printf("Hello, I am %d\n", data->tid);
     printf("Start is %u and end is %u\n", data->start, data->end);
 
+    clock_t tic = clock();
     for(uint32_t i = data->start; i < data->end; i++) {
         for (uint32_t j = data->csc_col_low[i]; j < data->csc_col_low[i+1]; j++) {
 
@@ -110,6 +107,10 @@ void* count_triangles(void *arg) {
             data->values[j] = sum_common(i, c, (uint32_t*)data->csc_row_complete, (uint32_t*)data->csc_col_complete);
         }
     }
+    clock_t toc = clock() - tic;
+    double elapsed = ((double)toc)/CLOCKS_PER_SEC;
+    // load balancing testing
+    printf("Finished id: %d. Elapsed time: %.5f\n", data->tid, elapsed);
 
     pthread_exit(NULL);
 }
