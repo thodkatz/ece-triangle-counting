@@ -8,10 +8,13 @@
 \usepackage[hidelinks, colorlinks = true, urlcolor = blue]{hyperref}
 \usepackage{indentfirst}
 \usepackage{graphicx}
-\usepackage[left=1cm,right=1cm,top=1cm,bottom=1cm]{geometry}
+\usepackage[left=0.5cm,right=0.5cm,top=0.2cm,bottom=0.2cm]{geometry}
 \usepackage{lipsum}
 \usepackage{caption}
 \usepackage{subcaption}
+
+\usepackage{titlesec}
+\titlespacing{\section}{0pc}{1.5ex plus .1ex minus .2ex}{0pc}
 
 %\setlength{\parindent}{1em}
 %\setlength{\parskip}{1em}\title{Εργασία Στατιστικής}
@@ -30,12 +33,127 @@
 %\pagebreak
 \tableofcontents
 
+\vspace{1cm}
 
-\section{Version 4 pthreads}
+\section{n = 1.441.295, m = 3.099.940 (belgium\_osm.mtx)}
+
+\begin{figure}[h!]
+     \begin{subfigure}[b]{0.33\textwidth}
+         \centering
+         \includegraphics[height=.4\textheight, width=\textwidth, keepaspectratio]{assets/belgium/v3.png}
+    \caption{V3 binary search}
+     \end{subfigure}
+     \hfill
+     \begin{subfigure}[b]{0.33\textwidth}
+         \centering
+         \includegraphics[height=.4\textheight, width=\textwidth, keepaspectratio]{assets/belgium/v4_binary.png}
+         \caption{V4 binary search}
+     \end{subfigure}
+     \begin{subfigure}[b]{0.33\textwidth}
+         \centering
+         \includegraphics[height=.4\textheight, width=\textwidth, keepaspectratio]{assets/belgium/v4_linear.png}
+         \caption{V4 linear search} 
+     \end{subfigure}
+\end{figure}
+
+\pagebreak
+\section{n = 1.134.890, m = 5.975.248 (com-Youtube.mtx)}
+
+\begin{figure}[h!]
+     \begin{subfigure}[b]{0.33\textwidth}
+         \centering
+         \includegraphics[height=.4\textheight, width=\textwidth, keepaspectratio]{assets/youtube/v3.png}
+    \caption{V3 binary search}
+     \end{subfigure}
+     \hfill
+     \begin{subfigure}[b]{0.33\textwidth}
+         \centering
+         \includegraphics[height=.4\textheight, width=\textwidth, keepaspectratio]{assets/youtube/v4_binary.png}
+         \caption{V4 binary search}
+     \end{subfigure}
+     \begin{subfigure}[b]{0.33\textwidth}
+         \centering
+         \includegraphics[height=.4\textheight, width=\textwidth, keepaspectratio]{assets/youtube/v4_linear.png}
+         \caption{V4 linear search} 
+     \end{subfigure}
+\end{figure}
+
+\section{n = 326,186, m = 1,615,400 (dblp-2010.mtx)}
+
+
+\begin{figure}[h!]
+     \begin{subfigure}[b]{0.33\textwidth}
+         \centering
+         \includegraphics[height=.4\textheight, width=\textwidth, keepaspectratio]{assets/dblp/v3.png}
+    \caption{V3 binary search}
+     \end{subfigure}
+     \hfill
+     \begin{subfigure}[b]{0.33\textwidth}
+         \centering
+         \includegraphics[height=.4\textheight, width=\textwidth, keepaspectratio]{assets/dblp/v4_binary.png}
+         \caption{V4 binary search}
+     \end{subfigure}
+     \begin{subfigure}[b]{0.33\textwidth}
+         \centering
+         \includegraphics[height=.4\textheight, width=\textwidth, keepaspectratio]{assets/dblp/v4_linear.png}
+         \caption{V4 linear search} 
+     \end{subfigure}
+\end{figure}
+
+\section{n = 6.143 , m = 1.227.742 (mycielskian.mtx)}
+
+\begin{figure}[h!]
+     \begin{subfigure}[b]{0.33\textwidth}
+         \centering
+         \includegraphics[height=.4\textheight, width=\textwidth, keepaspectratio]{assets/mycielskian/v3.png}
+    \caption{V3 binary search}
+     \end{subfigure}
+     \hfill
+     \begin{subfigure}[b]{0.33\textwidth}
+         \centering
+         \includegraphics[height=.4\textheight, width=\textwidth, keepaspectratio]{assets/mycielskian/v4_binary.png}
+         \caption{V4 binary search}
+     \end{subfigure}
+     \begin{subfigure}[b]{0.33\textwidth}
+         \centering
+         \includegraphics[height=.4\textheight, width=\textwidth, keepaspectratio]{assets/mycielskian/v4_linear.png}
+         \caption{V4 linear search} 
+     \end{subfigure}
+\end{figure}
+
+\pagebreak
+
+\section{n = 1.039.183 , m = 6.229.636 (NACA0015.mtx)}
+
+\begin{figure}[h!]
+     \begin{subfigure}[b]{0.33\textwidth}
+         \centering
+         \includegraphics[height=.4\textheight, width=\textwidth, keepaspectratio]{assets/NACA0015/v3.png}
+    \caption{V3 binary search}
+     \end{subfigure}
+     \hfill
+     \begin{subfigure}[b]{0.33\textwidth}
+         \centering
+         \includegraphics[height=.4\textheight, width=\textwidth, keepaspectratio]{assets/NACA0015/v4_binary.png}
+         \caption{V4 binary search}
+     \end{subfigure}
+     \begin{subfigure}[b]{0.33\textwidth}
+         \centering
+         \includegraphics[height=.4\textheight, width=\textwidth, keepaspectratio]{assets/NACA0015/v4_linear.png}
+         \caption{V4 linear search} 
+     \end{subfigure}
+\end{figure}
+
+
+\section{Συμπεράσματα}
+
+\section{Load balancing}
 
 %Το \textbf{load balancing} είναι ιδιαίτερα σημαντικό. Παρατηρούμε ότι όταν διαμοιράζουμε την δουλεία με βάση το index, δεν βλέπουμε βελτίωση στην απόδοση, μιας και την περισσότερη δουλειά την κάνει μόνο ένα thread. Συνεπώς θα πρέπει να είμαστε ιδιαίτερα προσεκτικοί με το scheduling των threads. Τα ίδια συμπεράσματα μπορούσαμε να εξάγουμε και απο την openmp υλοποίηση για static scheduling. Οπότε με dynamic scheduling σε pthreads και openmp έχουμε πολύ καλύτερα αποτελέσματα... Βασική διαφορά είναι ότι σε pthreads είναι λίγο πιο δύσκολο να υλοποιηθεί (στην openmp είναι μονο ένα keyword static -> dynamic). 
 
-The more the loops are balanced, the better our static implementation will be. Για παράδειγμα, παρατηρώντας τις δύο παρακάτω εικόνες\footnote{Δεν έχει τρέξει στην συστοιχία αλλά σε προσωπικό σύστημα. FIX ME!}. το πρώτο thread κάνει σχεδόν όλη την δουλειά προκαλώντας load imbalance και επηρεάζοντας σημαντικά το speedup. Στα πλαίσια του χρονικού διαστήματος της εργασίας, λείπει μια δυναμική έκδοση των pthreads. Εικάζουμε ότι σε τέτοιες περιπτώσεις θα ήταν αρκετά πιο αποδοτική (βλέποντας και την απόκριση του schedule dynamic σε openmp υλοποίηση).
+The more the loops are balanced, the better our \textbf{static} implementation will be. Για παράδειγμα, παρατηρώντας τις δύο παρακάτω εικόνες\footnote{Δεν έχει τρέξει στην συστοιχία αλλά σε προσωπικό σύστημα. FIX ME!}. το πρώτο thread κάνει σχεδόν όλη την δουλειά προκαλώντας load imbalance και επηρεάζοντας σημαντικά το speedup. Στα πλαίσια του χρονικού διαστήματος της εργασίας, λείπει μια δυναμική έκδοση των pthreads. Εικάζουμε ότι σε τέτοιες περιπτώσεις θα ήταν αρκετά πιο αποδοτική (βλέποντας και την απόκριση του schedule dynamic σε openmp υλοποίηση).
+
+Με αυτά τα γραφήματα μπορούμε να εξηγήσουμε την διαγορετική απόδοση μεταξύ dynamic και static scheduling στους παραπάνω πίνακες.
 
 \begin{figure}[h!]
      \begin{subfigure}[b]{0.45\textwidth}
@@ -51,12 +169,12 @@ The more the loops are balanced, the better our static implementation will be. �
      \end{subfigure}
 \end{figure}
 
-
 \section{Notes}
 \begin{itemize}
     \item Αναγνώριση χρονοβόρων διαδικασιών/επαναλήψεων
     \item Αφαίρεση εξαρτήσεων μεταξύ των επαναλήψεων (loop carrier dependency)
-    \item Is the code scalable?
+    \item Αναγνώριση βέλτιστου scheduling (κατανομή "βάρους")
+    \item Binary vs Linear search sorted not very different
 \end{itemize}
 
 \end{document}
