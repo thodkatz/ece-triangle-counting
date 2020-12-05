@@ -22,14 +22,15 @@ uint32_t sum_common(uint32_t, uint32_t, uint32_t*, uint32_t*);
  */
 void v4(uint32_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_complete, uint32_t *csc_row_low, uint32_t *csc_col_low,
             const uint32_t nnz_complete, const uint32_t n) {
-    printf("\n----------Version 4----------\n");
+    //printf("\n----------Version 4----------\n");
+    printf("----------Version 4----------\n");
 
     uint32_t *values = (uint32_t*)malloc(nnz_complete/2 * sizeof(uint32_t));
 
     struct timespec tic;
     struct timespec toc;
     clock_gettime(CLOCK_MONOTONIC, &tic);
-    printf("Tic: %lu seconds and %lu nanoseconds\n", tic.tv_sec, tic.tv_nsec);
+    //printf("Tic: %lu seconds and %lu nanoseconds\n", tic.tv_sec, tic.tv_nsec);
 
     for(uint32_t i = 0; i < n; i++) {
         for (uint32_t j = csc_col_low[i]; j < csc_col_low[i+1]; j++) {
@@ -47,11 +48,12 @@ void v4(uint32_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_comple
     for(uint32_t i = 0; i < n; i++) count += vertices[i];
 
     clock_gettime(CLOCK_MONOTONIC, &toc);
-    printf("Toc: %lu seconds and %lu nanoseconds\n", toc.tv_sec, toc.tv_nsec);
+    //printf("Toc: %lu seconds and %lu nanoseconds\n", toc.tv_sec, toc.tv_nsec);
     double diff = diff_time(tic, toc);
-    printf("Time elapsed (seconds): %0.6f\n", diff);
+    //printf("Time elapsed (seconds): %0.6f\n", diff);
+    printf("%0.6f\n", diff);
     
-    printf("Total number of triangles: %u\n", count/3);
+    //printf("Total number of triangles: %u\n", count/3);
 
 }
 

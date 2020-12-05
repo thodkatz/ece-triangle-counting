@@ -10,14 +10,15 @@ uint32_t binary_search_yav(uint32_t* array, uint32_t key, int32_t low, int32_t h
  *
  */
 void v3_pre_cilk(uint32_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, const uint32_t n) {
-    printf("\n----------Version 3 Pre Cilk Sequential with Binary Search----------\n");
+    //printf("\n----------Version 3 Pre Cilk Sequential with Binary Search----------\n");
+    printf("----------Version 3 Pre Cilk Sequential with Binary Search----------\n");
 
     uint32_t count = 0;
 
     struct timespec tic;
     struct timespec toc;
     clock_gettime(CLOCK_MONOTONIC, &tic);
-    printf("Tic: %lu seconds and %lu nanoseconds\n", tic.tv_sec, tic.tv_nsec);
+    //printf("Tic: %lu seconds and %lu nanoseconds\n", tic.tv_sec, tic.tv_nsec);
 
     uint32_t ret = 0;
     for (uint32_t i = 0; i < n; i++) {
@@ -36,11 +37,12 @@ void v3_pre_cilk(uint32_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const
 
 
     clock_gettime(CLOCK_MONOTONIC, &toc);
-    printf("Toc: %lu seconds and %lu nanoseconds\n", toc.tv_sec, toc.tv_nsec);
+    //printf("Toc: %lu seconds and %lu nanoseconds\n", toc.tv_sec, toc.tv_nsec);
     double diff = diff_time(tic, toc);
-    printf("Time elapsed (seconds): %0.6f\n", diff);
+    //printf("Time elapsed (seconds): %0.6f\n", diff);
+    printf("%0.6f\n", diff);
 
-    printf("Total triangles: %lu\n", count);
+    //printf("Total triangles: %lu\n", count);
 
 }
 

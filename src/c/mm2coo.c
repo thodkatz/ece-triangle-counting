@@ -43,9 +43,9 @@ void mm2coo(int argc, char *argv[], uint32_t **rows, uint32_t **columns, uint32_
 
     /* find out size of sparse matrix .... */
     if ((mm_read_mtx_crd_size(f, &r, &c, &nnz)) !=0) exit(1);
-    printf("Number of nnz: %u\n", nnz);
+    //printf("Number of nnz: %u\n", nnz);
     n = r;
-    printf("Rows/columns: %u\n", n);
+    //printf("Rows/columns: %u\n", n);
 
     *rows = (uint32_t*) malloc(nnz * sizeof(uint32_t));
     *columns = (uint32_t*) malloc(nnz * sizeof(uint32_t));
@@ -65,11 +65,11 @@ void mm2coo(int argc, char *argv[], uint32_t **rows, uint32_t **columns, uint32_
 
         //printf("Elements: [%lu, %lu]\n", rows[i], columns[i]);
     }
-    printf("Success, MM format is converted to COO\n");
+    //printf("Success, MM format is converted to COO\n");
 
     if (f !=stdin) {
         fclose(f);
-        printf("File is successfully closed\n");
+        //printf("File is successfully closed\n");
     }
 }
 

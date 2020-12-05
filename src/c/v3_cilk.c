@@ -37,7 +37,8 @@
 extern uint32_t binary_search_yav(uint32_t* array, uint32_t key, int32_t low, int32_t high);
 
 void v3_cilk(uint32_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, const uint32_t n) {
-    printf("\n----------Version 3 Cilk is called----------\n");
+    //printf("\n----------Version 3 Cilk----------\n");
+    printf("----------Version 3 Cilk----------\n");
 
 
 
@@ -46,7 +47,7 @@ void v3_cilk(uint32_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const uin
     struct timespec tic;
     struct timespec toc;
     clock_gettime(CLOCK_MONOTONIC, &tic);
-    printf("Tic: %lu seconds and %lu nanoseconds\n", tic.tv_sec, tic.tv_nsec);
+    //printf("Tic: %lu seconds and %lu nanoseconds\n", tic.tv_sec, tic.tv_nsec);
 
     // cilkrts set param doesnt work with clang
     /* __cilkrts_end_cilk(); */
@@ -56,7 +57,8 @@ void v3_cilk(uint32_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const uin
     /* } */
 
     int numWorkers = __cilkrts_get_nworkers();
-    printf("Numbers of workers: %d\n", numWorkers);
+    //printf("Numbers of workers: %d\n", numWorkers);
+    printf("%d\n", numWorkers);
     
     //int currWorker = __cilkrts_get_worker_number();
     //printf("Current worker: %d\n", currWorker);
@@ -112,13 +114,14 @@ void v3_cilk(uint32_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const uin
     /* } */
 
     clock_gettime(CLOCK_MONOTONIC, &toc);
-    printf("Toc: %lu seconds and %lu nanoseconds\n", toc.tv_sec, toc.tv_nsec);
+    //printf("Toc: %lu seconds and %lu nanoseconds\n", toc.tv_sec, toc.tv_nsec);
     double diff = diff_time(tic, toc);
-    printf("Time elapsed (seconds): %0.6f\n", diff);
+    //printf("Time elapsed (seconds): %0.6f\n", diff);
+    printf("%0.6f\n", diff);
 
-    printf("Total triangles (race bug): %lu\n", count);
-    printf("Total triangles using cilk: %u\n", cilk_count.get_value()); 
-    printf("Total triangles using indeces: %u\n", indeces.size()/3); 
+    //printf("Total triangles (race bug): %lu\n", count);
+    //printf("Total triangles using cilk: %u\n", cilk_count.get_value()); 
+    //printf("Total triangles using indeces: %u\n", indeces.size()/3); 
     //printf("Total triangles using mem: %u\n", count_mem); 
 
 }

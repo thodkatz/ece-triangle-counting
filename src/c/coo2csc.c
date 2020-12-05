@@ -64,6 +64,6 @@ void coo2csc(
   }
 
 
-  printf("Success, COO format is converted to CSC\n");
+  //printf("Success, COO format is converted to CSC\n");
 
 }

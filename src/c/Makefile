@@ -18,13 +18,13 @@ cilk:
 	$(CILKCC2) -g -O3 $(CILK_SRC) -o main -fcilkplus #-fsanitize=cilk  
 
 cilk_hpc:
-	$(CC) -g -O3 $(CILK_SRC) -o main -fcilkplus #-fsanitize=cilk  
+	$(CC) -g -O3 $(CILK_SRC) -o main_cilk -fcilkplus #-fsanitize=cilk  
 
 openmp: 
-	$(CC) -g -O3 $(MP_SRC) -o main -fopenmp
+	$(CC) -g -O3 $(MP_SRC) -o main_openmp -fopenmp
 
 pthread: 
-	$(CC) -g -O3 $(PTHREAD_SRC) -o main -lpthread
+	$(CC) -g -O3 $(PTHREAD_SRC) -o main_pthread -lpthread
 
 .PHONY: clean
 

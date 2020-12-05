@@ -28,13 +28,14 @@ extern int binary_search(uint32_t*, uint32_t, int32_t, int32_t);
  */
 void v4_cilk(uint32_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_complete, uint32_t *csc_row_down, uint32_t *csc_col_down,
             const uint32_t nnz_complete, const uint32_t n) {
-    printf("\n----------Version 4 Cilk----------\n");
+    //printf("\n----------Version 4 Cilk----------\n");
+    printf("----------Version 4 Cilk----------\n");
 
 
     struct timespec tic;
     struct timespec toc;
     clock_gettime(CLOCK_MONOTONIC, &tic);
-    printf("Tic: %lu seconds and %lu nanoseconds\n", tic.tv_sec, tic.tv_nsec);
+    //printf("Tic: %lu seconds and %lu nanoseconds\n", tic.tv_sec, tic.tv_nsec);
 
 
     /* __cilkrts_end_cilk(); */
@@ -44,7 +45,8 @@ void v4_cilk(uint32_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_c
     /* } */
 
     uint8_t numWorkers = __cilkrts_get_nworkers();
-    printf("Numbers of workers: %d\n", numWorkers);
+    //printf("Numbers of workers: %d\n", numWorkers);
+    printf("%d\n", numWorkers);
 
     uint32_t *values = (uint32_t*)malloc(nnz_complete/2 * sizeof(uint32_t));
 
@@ -69,11 +71,12 @@ void v4_cilk(uint32_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_c
     for(uint32_t i = 0; i < n; i++) count += vertices[i];
 
     clock_gettime(CLOCK_MONOTONIC, &toc);
-    printf("Toc: %lu seconds and %lu nanoseconds\n", toc.tv_sec, toc.tv_nsec);
+    //printf("Toc: %lu seconds and %lu nanoseconds\n", toc.tv_sec, toc.tv_nsec);
     double diff = diff_time(tic, toc);
-    printf("Time elapsed (seconds): %0.6f\n", diff);
+    //printf("Time elapsed (seconds): %0.6f\n", diff);
+    printf("%0.6f\n", diff);
     
-    printf("Total number of triangles: %u\n", count/3);
+    //printf("Total number of triangles: %u\n", count/3);
 
 }
 

@@ -12,7 +12,7 @@
  * 2 --> openmp
  * 3 --> pthreads
  */
-#define MODE 1
+#define MODE 3
 
 # if MODE == 1
 #include "include/v3_cilk.h"
@@ -40,11 +40,11 @@ int main(int argc, char *argv[]) {
     /*                  Version 1 and 2                       */
     /**********************************************************/
 
-    printf("\n----------Version 1 and 2 Prerequisites----------\n");
-    const uint32_t nodes = 2; 
-    int adjacency[nodes][nodes] = {0};
-    size_t length = sizeof(adjacency)/sizeof(adjacency[0][0]);
-    printf("The length of the array is %lu and the nodes are %u\n", length, nodes);
+    /* printf("\n----------Version 1 and 2 Prerequisites----------\n"); */
+    /* const uint32_t nodes = 2; */ 
+    /* int adjacency[nodes][nodes] = {0}; */
+    /* size_t length = sizeof(adjacency)/sizeof(adjacency[0][0]); */
+    /* printf("The length of the array is %lu and the nodes are %u\n", length, nodes); */
 
     /* int adjacency[nodes][nodes] = {{0, 0, 0, 1, 1, 1}, */
     /*                            {0, 0, 1, 0, 0, 1}, */
@@ -62,51 +62,51 @@ int main(int argc, char *argv[]) {
 
 
     // create a random array WARNING: it should be symmetrical. Not just random */
-    srand(time(NULL));
-    printf("The random generated array is:\n");
-    for (uint32_t i = 0; i < nodes; i++)
-    {
-        for (uint32_t j = 0; j < i+1; j++)
-        {
-            adjacency[i][j] = rand()%2;
-            adjacency[j][i] = adjacency[i][j];
-            if (i == j)
-                adjacency[i][i] = 0; // no self loops
-        }
-    }
+    /* srand(time(NULL)); */
+    /* printf("The random generated array is:\n"); */
+    /* for (uint32_t i = 0; i < nodes; i++) */
+    /* { */
+    /*     for (uint32_t j = 0; j < i+1; j++) */
+    /*     { */
+    /*         adjacency[i][j] = rand()%2; */
+    /*         adjacency[j][i] = adjacency[i][j]; */
+    /*         if (i == j) */
+    /*             adjacency[i][i] = 0; // no self loops */
+    /*     } */
+    /* } */
     
-    for (uint32_t i = 0; i < nodes; i++)
-    {
-        if (i == 0)
-            printf("[[");
-        else
-            printf(" [");
-        for (uint32_t j = 0; j < nodes; j++)
-            printf("%d,", adjacency[i][j]);
-        if (i == nodes -1)
-            printf("]]\n");
-        else
-            printf("],\n");
-    }
+    /* for (uint32_t i = 0; i < nodes; i++) */
+    /* { */
+    /*     if (i == 0) */
+    /*         printf("[["); */
+    /*     else */
+    /*         printf(" ["); */
+    /*     for (uint32_t j = 0; j < nodes; j++) */
+    /*         printf("%d,", adjacency[i][j]); */
+    /*     if (i == nodes -1) */
+    /*         printf("]]\n"); */
+    /*     else */
+    /*         printf("],\n"); */
+    /* } */
 
 
-    vertices = (uint32_t*)calloc(nodes, sizeof(uint64_t));
-    //v1((uint32_t*)vertices, (int *)adjacency, nodes);
-    //print_vertix(vertices, nodes);
-    free(vertices);
-    vertices = NULL;
+    /* vertices = (uint32_t*)calloc(nodes, sizeof(uint64_t)); */
+    /* v1((uint32_t*)vertices, (int *)adjacency, nodes); */
+    /* print_vertix(vertices, nodes); */
+    /* free(vertices); */
+    /* vertices = NULL; */
 
-    vertices = (uint32_t*)calloc(nodes, sizeof(uint64_t));
-    //v2((uint32_t*)vertices, (int *)adjacency, nodes);
-    //print_vertix(vertices, nodes);
-    free(vertices);
-    vertices = NULL;
+    /* vertices = (uint32_t*)calloc(nodes, sizeof(uint64_t)); */
+    /* v2((uint32_t*)vertices, (int *)adjacency, nodes); */
+    /* print_vertix(vertices, nodes); */
+    /* free(vertices); */
+    /* vertices = NULL; */
 
     /**********************************************************/
     /*                    Version 3                           */
     /**********************************************************/
 
-    printf("\n----------Version 3 Prerequisites----------\n");
+    //printf("\n----------Version 3 Prerequisites----------\n");
 
     // Matrix Market format to COO
     uint32_t *coo_row; 
@@ -116,8 +116,8 @@ int main(int argc, char *argv[]) {
 
     mm2coo(argc, argv, &coo_row, &coo_col, nnz, n);
 
-    printf("Number of nnz (excluding diagonal elements): %u\n", nnz);
-    printf("Rows/columns: %u\n", n);
+    //printf("Number of nnz (excluding diagonal elements): %u\n", nnz);
+    //printf("Rows/columns: %u\n", n);
 
     //print_coo(coo_row, coo_col, nnz);
 
@@ -131,44 +131,44 @@ int main(int argc, char *argv[]) {
     //print_csr(csc_row_low, csc_col_low, nnz, n);
     
     vertices = (uint32_t*)calloc(n, sizeof(uint32_t));
-    v3((uint32_t*)vertices, (uint32_t*)csc_row_low, (uint32_t*)csc_col_low, nnz, n);
+    //v3((uint32_t*)vertices, (uint32_t*)csc_row_low, (uint32_t*)csc_col_low, nnz, n);
     //print_vertix(vertices, n);
     free(vertices);
     vertices = NULL;
 
     vertices = (uint32_t*)calloc(n, sizeof(uint32_t));
-    v3_pre_cilk((uint32_t*)vertices, (uint32_t*)csc_row_low, (uint32_t*)csc_col_low, nnz, n);
+    //v3_pre_cilk((uint32_t*)vertices, (uint32_t*)csc_row_low, (uint32_t*)csc_col_low, nnz, n);
     //print_vertix(vertices, n);
     free(vertices);
     vertices = NULL;
     
 #if MODE == 1
     vertices = (uint32_t*)calloc(n, sizeof(uint32_t));
-    v3_cilk((uint32_t*)vertices, (uint32_t*)csc_row_low, (uint32_t*)csc_col_low, nnz, n);
+    //v3_cilk((uint32_t*)vertices, (uint32_t*)csc_row_low, (uint32_t*)csc_col_low, nnz, n);
     //print_vertix(vertices, n);
     free(vertices);
     vertices = NULL;
 
 #elif MODE == 2
     vertices = (uint32_t*)calloc(n, sizeof(uint32_t));
-    v3_openmp((uint32_t*)vertices, (uint32_t*)csc_row_low, (uint32_t*)csc_col_low, nnz, n); // seg fault 
+    //v3_openmp((uint32_t*)vertices, (uint32_t*)csc_row_low, (uint32_t*)csc_col_low, nnz, n, atoi(argv[2])); 
     //print_vertix(vertices, n);
     free(vertices);
     vertices = NULL;
 
     vertices = (uint32_t*)calloc(n, sizeof(uint32_t));
-    v3_openmp_yav((uint32_t*)vertices, (uint32_t*)csc_row_low, (uint32_t*)csc_col_low, nnz, n);
+    //v3_openmp_yav((uint32_t*)vertices, (uint32_t*)csc_row_low, (uint32_t*)csc_col_low, nnz, n);
     //print_vertix(vertices, n);
     free(vertices);
     vertices = NULL;
 #endif
 
-    printf("\n----------Version 4 Prerequisites----------\n");
+    //printf("\n----------Version 4 Prerequisites----------\n");
 
     uint32_t* csc_row_up = (uint32_t*)malloc(nnz * sizeof(uint32_t));
     uint32_t* csc_col_up = (uint32_t*)malloc((n+1) * sizeof(uint32_t));
 
-    printf("Swapping the rows and columns. Creating the upper triangle in csc scheme\n");
+    //printf("Swapping the rows and columns. Creating the upper triangle in csc scheme\n");
     coo2csc(csc_row_up, csc_col_up, coo_col, coo_row, nnz, n, 0);
     //print_csr(csc_row_up, csc_col_up, nnz, n);
 
@@ -177,13 +177,13 @@ int main(int argc, char *argv[]) {
     uint32_t nnz_complete = 0;
     merge_csc(csc_row_low, csc_col_low, csc_row_up, csc_col_up, csc_row_complete, csc_col_complete, nnz_complete, n);
 
-    printf("Numbers of nnz symmetric matrix: %u\nRows/columns: %u\n", nnz_complete, n);
+    //printf("Numbers of nnz symmetric matrix: %u\nRows/columns: %u\n", nnz_complete, n);
     if (nnz_complete != 2*nnz) printf("Invalid number of non zeros. The function merge_csc() has a bug\n");
 
     //print_csr(csc_row_complete, csc_col_complete, nnz_complete, n);
 
     vertices = (uint32_t*)calloc(n, sizeof(uint32_t));
-    v4((uint32_t*)vertices, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete, csc_row_low, csc_col_low, nnz_complete, n);
+    //v4((uint32_t*)vertices, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete, csc_row_low, csc_col_low, nnz_complete, n);
     //print_vertix(vertices, n);
     free(vertices);
     vertices = NULL;
@@ -203,14 +203,14 @@ int main(int argc, char *argv[]) {
 
 #elif MODE == 2
     vertices = (uint32_t*)calloc(n, sizeof(uint32_t));
-    v4_openmp((uint32_t*)vertices, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete, csc_row_low, csc_col_low, nnz_complete, n);
+    v4_openmp((uint32_t*)vertices, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete, csc_row_low, csc_col_low, nnz_complete, n, atoi(argv[2]));
     //print_vertix(vertices, n);
     free(vertices);
     vertices = NULL;
 
 #elif MODE == 3
     vertices = (uint32_t*)calloc(n, sizeof(uint32_t));
-    v4_pthread((uint32_t*)vertices, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete, csc_row_low, csc_col_low, nnz_complete, n);
+    v4_pthread((uint32_t*)vertices, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete, csc_row_low, csc_col_low, nnz_complete, n, atoi(argv[2]));
     //print_vertix(vertices, n);
     free(vertices);
     vertices = NULL;

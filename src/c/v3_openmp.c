@@ -31,8 +31,9 @@
 
 extern uint32_t binary_search_yav(uint32_t* array, uint32_t key, int32_t low, int32_t high);
 
-void v3_openmp(uint32_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, const uint32_t n) {
-    printf("\n----------Version 3 OpenMP----------\n");
+void v3_openmp(uint32_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, const uint32_t n, int numThreads) {
+    //printf("\n----------Version 3 OpenMP----------\n");
+    printf("----------Version 3 OpenMP Static----------\n");
 
 
     uint32_t count = 0;
@@ -40,10 +41,10 @@ void v3_openmp(uint32_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const u
     struct timespec tic;
     struct timespec toc;
     clock_gettime(CLOCK_MONOTONIC, &tic);
-    printf("Tic: %lu seconds and %lu nanoseconds\n", tic.tv_sec, tic.tv_nsec);
+    //printf("Tic: %lu seconds and %lu nanoseconds\n", tic.tv_sec, tic.tv_nsec);
 
-    printf("The number of threads were : %d\n", omp_get_num_threads());
-    //omp_set_num_threads(NUM_THREADS);
+    //printf("The number of threads were : %d\n", omp_get_num_threads());
+    omp_set_num_threads(numThreads);
 
 
     uint32_t *vertices_openmp = (uint32_t*)calloc(n, sizeof(uint32_t));  // some cases seg fault :(
@@ -53,11 +54,11 @@ void v3_openmp(uint32_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const u
         if (tid == 0) printf("The numbers of threads are %d\n", omp_get_num_threads());
         #pragma omp single 
         {
-            printf("The number of available procs are: %d\n", omp_get_num_procs());
+            //printf("The number of available procs are: %d\n", omp_get_num_procs());
         }
 
         //#pragma omp  for reduction(+:count, vertices[:n]) seg fault, because vertices was global var maybe
-        #pragma omp  for schedule(dynamic) reduction(+:count, vertices_openmp[:n])
+        #pragma omp  for schedule(static) reduction(+:count, vertices_openmp[:n])
         for (uint32_t i = 0; i < n; i++) {
             for (uint32_t m = csc_col[i]; m < csc_col[i+1]; m++) {
                 for (uint32_t k = m + 1; k < csc_col[i+1]; k++) {
@@ -86,9 +87,10 @@ void v3_openmp(uint32_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const u
 
 
     clock_gettime(CLOCK_MONOTONIC, &toc);
-    printf("Toc: %lu seconds and %lu nanoseconds\n", toc.tv_sec, toc.tv_nsec);
+    //printf("Toc: %lu seconds and %lu nanoseconds\n", toc.tv_sec, toc.tv_nsec);
     double diff = diff_time(tic, toc);
-    printf("Time elapsed (seconds): %0.6f\n", diff);
+    //printf("Time elapsed (seconds): %0.6f\n", diff);
+    printf("%0.6f\n", diff);
 
-    printf("Total triangles openmp: %lu\n", count);
+    //printf("Total triangles openmp: %lu\n", count);
 }

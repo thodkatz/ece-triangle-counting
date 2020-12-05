@@ -33,6 +33,6 @@ void merge_csc(uint32_t* csc_row_down, uint32_t* csc_col_down, uint32_t* csc_row
 
     csc_col_complete[n] = nnz;
 
-    printf("Success, CSC lower and upper are merged\n");
+    //printf("Success, CSC lower and upper are merged\n");
 }
 
