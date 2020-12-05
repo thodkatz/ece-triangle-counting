@@ -26,7 +26,7 @@ extern int binary_search(uint32_t*, uint32_t, int32_t, int32_t);
 void v4_openmp(uint32_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_complete, uint32_t *csc_row_down, uint32_t *csc_col_down,
             const uint32_t nnz_complete, const uint32_t n, int numThreads) {
     //printf("\n----------Version 4 OpenMP----------\n");
-    printf("----------Version 4 OpenMP Binary----------\n");
+    printf("----------Version 4 OpenMP Binary Static----------\n");
 
 
     struct timespec tic;
@@ -47,7 +47,7 @@ void v4_openmp(uint32_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col
         if (tid == 0) {
             printf("The number of threads are : %d\n", omp_get_num_threads());
         }
-        #pragma omp for schedule(dynamic) 
+        #pragma omp for schedule(static) 
         for (uint32_t i = 0; i < n; i++) {
             for (uint32_t j = csc_col_down[i]; j < csc_col_down[i+1]; j++) {
 
