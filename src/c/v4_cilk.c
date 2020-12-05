@@ -11,7 +11,7 @@
  * 1 -> binary search
  * 2 -> linear search
  */
-#define SUM_MODE 2
+#define SUM_MODE 1
 
 // #define NWORKERS "4". The setting will be done via env variable in sbatch script
 
@@ -29,7 +29,7 @@ extern int binary_search(uint32_t*, uint32_t, int32_t, int32_t);
 void v4_cilk(uint32_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_complete, uint32_t *csc_row_down, uint32_t *csc_col_down,
             const uint32_t nnz_complete, const uint32_t n) {
     //printf("\n----------Version 4 Cilk----------\n");
-    printf("----------Version 4 Cilk----------\n");
+    printf("----------Version 4 Cilk Binary----------\n");
 
 
     struct timespec tic;

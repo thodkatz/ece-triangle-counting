@@ -12,7 +12,7 @@
  * 2 --> openmp
  * 3 --> pthreads
  */
-#define MODE 3
+#define MODE 0
 
 # if MODE == 1
 #include "include/v3_cilk.h"
@@ -183,7 +183,7 @@ int main(int argc, char *argv[]) {
     //print_csr(csc_row_complete, csc_col_complete, nnz_complete, n);
 
     vertices = (uint32_t*)calloc(n, sizeof(uint32_t));
-    //v4((uint32_t*)vertices, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete, csc_row_low, csc_col_low, nnz_complete, n);
+    v4((uint32_t*)vertices, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete, csc_row_low, csc_col_low, nnz_complete, n);
     //print_vertix(vertices, n);
     free(vertices);
     vertices = NULL;

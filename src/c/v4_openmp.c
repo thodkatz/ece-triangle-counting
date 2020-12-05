@@ -7,7 +7,7 @@
  * 1 -> binary search
  * 2 -> linear search
  */
-#define SUM_MODE 2
+#define SUM_MODE 1
 
 // #define NUM_THREADS 8 The setting will be done via env variable in sbatch script
 
@@ -26,7 +26,7 @@ extern int binary_search(uint32_t*, uint32_t, int32_t, int32_t);
 void v4_openmp(uint32_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_complete, uint32_t *csc_row_down, uint32_t *csc_col_down,
             const uint32_t nnz_complete, const uint32_t n, int numThreads) {
     //printf("\n----------Version 4 OpenMP----------\n");
-    printf("----------Version 4 OpenMP----------\n");
+    printf("----------Version 4 OpenMP Binary----------\n");
 
 
     struct timespec tic;

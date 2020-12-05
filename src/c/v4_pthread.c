@@ -37,7 +37,7 @@ void v4_pthread(uint32_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_co
             const uint32_t nnz_complete, const uint32_t n, int numThreads) {
 
     //printf("\n----------Version 4 Pthread----------\n");
-    printf("----------Version 4 Pthread----------\n");
+    printf("----------Version 4 Pthread Binary----------\n");
 
 
     struct timespec tic;
