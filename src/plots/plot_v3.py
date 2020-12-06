@@ -3,10 +3,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-data_seq = genfromtxt('../plots/slurm/v3/NACA0015/output_seq.txt', delimiter=' ')
-data_cilk_t = genfromtxt('../plots/slurm/v3/NACA0015/cilk/output.txt', delimiter=' ')
-data_openmp_t = genfromtxt('../plots/slurm/v3/NACA0015/openmp/output.txt', delimiter=' ')
-data_openmp_static_t = genfromtxt('../plots/slurm/v3/NACA0015/openmp/static/output.txt', delimiter=' ')
+data_seq = genfromtxt('../plots/slurm/v3/mycielskian/output_seq.txt', delimiter=' ')
+data_cilk_t = genfromtxt('../plots/slurm/v3/mycielskian/cilk/output.txt', delimiter=' ')
+data_openmp_t = genfromtxt('../plots/slurm/v3/mycielskian/openmp/output.txt', delimiter=' ')
+data_openmp_static_t = genfromtxt('../plots/slurm/v3/mycielskian/openmp/static/output.txt', delimiter=' ')
 
 threads_cilk = []
 data_cilk = []
@@ -42,7 +42,7 @@ plt.ylabel("Time (s)", fontsize=12, labelpad=10)
 plt.legend()
 plt.grid(True);
 plt.xticks(np.arange(0, 22, 2))
-#plt.yticks(np.arange(0, 1.5, 0.1))
+plt.yticks(np.arange(0, 3.5, 0.1))
 
-#plt.title('v3 binary search NACA0015')
+#plt.title('v3 binary search mycielskian')
 plt.show()

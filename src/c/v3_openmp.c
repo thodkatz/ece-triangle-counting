@@ -3,23 +3,6 @@
 #include <time.h>
 #include <omp.h>
 
-/*
- * Counting triangles: The concept is, given a csc format from a down half symmetric matrix, to counte all the possible triangles.
- * One criteria to follow to be sure that you count properly without permuations is the rule: i<j<k following edges. In our test case
- * matrices are symmetrical so you can think this problem given a csr format. So, in this function we are trying first to find two
- * potential points of a triangle in a row e.g. a[i][j] and a[i][k]. The elements in a csr format are scanned by row in a snake way. So 
- * it is convenient for a given row to check the elemets right of the current in the ith row. Now that we have spotted a[i][j] and a[i][k],
- * find the jth row and iteratevthe elements by columns. Is there a[j][k]? Then you find a triangle. Still the rule is applied i<j<k.
- *
- * Notes:
- * Key elemets are: 1) The compressed array in the ith element indicates how many nnz have passed until (including) the ith-1 row. 
- *                  2) Substracting the values of index (i+1) and i, will result to the number of nnz in the ith row.
- * In the same way the above can be applied to a csc scheme mindset
- *
- * nnz: Number of non zero elements (half of the total because matrix symmetric)
- * n: Rows/columns 
- */
-
 //#define NUM_THREADS 8 The setting will be done via env variable in sbatch script
 
 
@@ -32,8 +15,7 @@
 extern uint32_t binary_search_yav(uint32_t* array, uint32_t key, int32_t low, int32_t high);
 
 void v3_openmp(uint32_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, const uint32_t n, int numThreads) {
-    //printf("\n----------Version 3 OpenMP----------\n");
-    printf("----------Version 3 OpenMP Static----------\n");
+    printf("\n----------Version 3 OpenMP----------\n");
 
 
     uint32_t count = 0;
@@ -58,7 +40,7 @@ void v3_openmp(uint32_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const u
         }
 
         //#pragma omp  for reduction(+:count, vertices[:n]) seg fault, because vertices was global var maybe
-        #pragma omp  for schedule(static) reduction(+:count, vertices_openmp[:n])
+        #pragma omp  for schedule(dynamic) reduction(+:count, vertices_openmp[:n])
         for (uint32_t i = 0; i < n; i++) {
             for (uint32_t m = csc_col[i]; m < csc_col[i+1]; m++) {
                 for (uint32_t k = m + 1; k < csc_col[i+1]; k++) {
@@ -70,7 +52,7 @@ void v3_openmp(uint32_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const u
                     for (uint32_t p = csc_col[csc_row[m]]; p < csc_col[csc_row[m]+1]; p++) {
                         if (csc_row[p] == csc_row[k]) {
                     #endif
-                            count++;
+                            //count++;
                             vertices_openmp[i]++;
                             vertices_openmp[csc_row[m]]++;
                             #if BINARY == 1

@@ -8,23 +8,6 @@
 #include <cilk/reducer_list.h>
 #include <list>
 
-/*
- * Counting triangles: The concept is, given a csc format from a down half symmetric matrix, to counte all the possible triangles.
- * One criteria to follow to be sure that you count properly without permuations is the rule: i<j<k following edges. In our test case
- * matrices are symmetrical so you can think this problem given a csr format. So, in this function we are trying first to find two
- * potential points of a triangle in a row e.g. a[i][j] and a[i][k]. The elements in a csr format are scanned by row in a snake way. So 
- * it is convenient for a given row to check the elemets right of the current in the ith row. Now that we have spotted a[i][j] and a[i][k],
- * find the jth row and iteratevthe elements by columns. Is there a[j][k]? Then you find a triangle. Still the rule is applied i<j<k.
- *
- * Notes:
- * Key elemets are: 1) The compressed array in the ith element indicates how many nnz have passed until (including) the ith-1 row. 
- *                  2) Substracting the values of index (i+1) and i, will result to the number of nnz in the ith row.
- * In the same way the above can be applied to a csc scheme mindset
- *
- * nnz: Number of non zero elements (half of the total because matrix symmetric)
- * n: Rows/columns 
- */
-
 // #define NWORKERS "4" The setting will be done via env variable in sbatch script
 
 /*
@@ -69,7 +52,7 @@ void v3_cilk(uint32_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const uin
     //std::list<unsigned int>::iterator it;
 
     //uint32_t cilk_count_mem[numWorkers] = {};
-    //uint32_t vertices_cilk[n][numWorkers]; // seg fault
+    //uint32_t vertices_cilk[n][numWorkers]; 
 
     //uint32_t ret = 0;
     cilk_for (uint32_t i = 0; i < n; i++) {
@@ -83,12 +66,10 @@ void v3_cilk(uint32_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const uin
                 for (uint32_t p = csc_col[csc_row[m]]; p < csc_col[csc_row[m]+1]; p++) {
                     if (csc_row[p] == csc_row[k]) {
                 #endif
-                        count++; // race bug
+                        //count++; // race bug
                         cilk_count++;
-                        //cilk_count_mem[currWorker]++; // should work
+                        //cilk_count_mem[currWorker]++; 
 
-                        // how to keep track of the indeces? Are lists parallel safe? No check and act though
-                        // eventually stl lists wont work. Use reducers
                         cilk_list->push_back(i);
                         cilk_list->push_back(csc_row[m]);
                         #if BINARY == 1
@@ -119,9 +100,9 @@ void v3_cilk(uint32_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const uin
     //printf("Time elapsed (seconds): %0.6f\n", diff);
     printf("%0.6f\n", diff);
 
-    //printf("Total triangles (race bug): %lu\n", count);
-    //printf("Total triangles using cilk: %u\n", cilk_count.get_value()); 
-    //printf("Total triangles using indeces: %u\n", indeces.size()/3); 
+    printf("Total triangles (race bug): %lu\n", count);
+    printf("Total triangles using cilk: %u\n", cilk_count.get_value()); 
+    printf("Total triangles using indeces: %u\n", indeces.size()/3); 
     //printf("Total triangles using mem: %u\n", count_mem); 
 
 }

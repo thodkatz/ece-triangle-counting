@@ -52,7 +52,7 @@ plt.ylabel("Time (s)", fontsize=12, labelpad=10)
 plt.legend()
 plt.grid(True);
 plt.xticks(np.arange(0, 22, 2))
-plt.yticks(np.arange(0, 1.2, 0.05))
+plt.yticks(np.arange(0, 1.45, 0.05))
 
 #plt.title('v3 binary search NACA0015')
 plt.show()
