@@ -31,7 +31,7 @@ void v1(uint32_t *vertices, int *adjacency, const uint32_t nodes) {
     double diff = diff_time(tic, toc);
     printf("Time elapsed (seconds): %0.6f\n", diff);
 
-    printf("Total triangles: %lu\n", count/6);
+    printf("Total triangles: %u\n", count/6);
 }
 
 

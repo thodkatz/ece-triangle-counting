@@ -1,4 +1,5 @@
 #include "include/main.h"
+#include "include/v4_pthread.h"
 #include <vector>
 #include <pthread.h>
 #include <time.h>
@@ -6,33 +7,7 @@
 #define NUM_THREADS 8
 
 extern void print_csr(uint32_t *, uint32_t *, uint32_t, uint32_t);
-extern void spmv(uint32_t*, uint32_t*, uint32_t*, uint32_t*, const uint32_t, const uint32_t);
-extern int binary_search(uint32_t*, uint32_t, int32_t, int32_t);
-extern uint32_t sum_common(uint32_t, uint32_t, uint32_t*, uint32_t*);
 
-
-// thread argument struct 
-typedef struct thread_data {
-  int tid;
-  uint32_t start;
-  uint32_t end;
-  uint32_t *csc_row_low;
-  uint32_t *csc_col_low;
-  uint32_t *csc_row_complete;
-  uint32_t *csc_col_complete;
-  uint32_t *values;
-} thread_data;
-
-// thread function
-void* count_triangles(void *arg);
-
-
-/*
- * Input: the adjacency matrix in a csc scheme for both the complete symmetric and the lower triangular
- *
- * The lower triangular will be used to walk only the half matrix
- *
- */
 void v4_pthread(uint32_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_complete, uint32_t *csc_row_low, uint32_t *csc_col_low,
             const uint32_t nnz_complete, const uint32_t n) {
 

@@ -2,15 +2,8 @@
 #include <time.h>
 
 
-int64_t binary_search_yav(uint32_t* array, uint32_t key, int32_t low, int32_t high);
-
-
-/*
- * Restructure v3 function, removing loop dependencies, trying to exploit parallelism. Change linear to binary search
- *
- */
 void v3_pre_cilk(uint32_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, const uint32_t n) {
-    printf("\n----------Version 3 Pre Cilk Sequential----------\n");
+    printf("\n----------Version 3 Pre Cilk----------\n");
 
     uint32_t count = 0;
 
@@ -40,14 +33,11 @@ void v3_pre_cilk(uint32_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const
     double diff = diff_time(tic, toc);
     printf("Time elapsed (seconds): %0.6f\n", diff);
 
-    printf("Total triangles: %lu\n", count);
+    printf("Total triangles: %u\n", count);
 
 }
 
 
-/*
- * Yet another version of binary search. In this implementation we return the index
- */
 int64_t binary_search_yav(uint32_t *array, uint32_t key, int32_t low, int32_t high) {
 
 

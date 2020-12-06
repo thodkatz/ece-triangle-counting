@@ -18,14 +18,6 @@
 extern void print_csr(uint32_t *, uint32_t *, uint32_t, uint32_t);
 
 
-extern int binary_search(uint32_t*, uint32_t, int32_t, int32_t);
-
-/*
- * Input: the adjacency matrix in a csc scheme for both the complete symmetric and the down triagonal
- *
- * The down triagonal will be used to walk only the half matrix
- *
- */
 void v4_cilk(uint32_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_complete, uint32_t *csc_row_down, uint32_t *csc_col_down,
             const uint32_t nnz_complete, const uint32_t n) {
 
@@ -78,9 +70,7 @@ void v4_cilk(uint32_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_c
 
 }
 
-/*
- * Returns the sum of the common elements of a symmetric csc matrix for two nodes
- */
+
 uint32_t sum_common_cilk(uint32_t i,uint32_t j, uint32_t *csc_row, uint32_t *csc_col) {
     
     uint32_t value = 0;
@@ -176,12 +166,6 @@ int binary_search_cilk(uint32_t *array, uint32_t key, int32_t low, int32_t high)
 
 
 
-/*
- * Sparse symmetric matrix vector multiplication 
- *
- * We divide the values by two to find the correct number of triangles.
- *
- */
 void spmv_cilk(uint32_t *y, uint32_t *csc_row, uint32_t *csc_col, uint32_t *values, const uint32_t nnz, const uint32_t n) {
 
     // x vector will be always 1, so change x -> 1

@@ -62,7 +62,7 @@ void mm2coo(int argc, char *argv[], uint32_t **rows, uint32_t **columns, uint32_
         //printf("Elements: [%lu, %lu]\n", rows[i], columns[i]);
     }
 
-    //printf("Success, MM format is converted to COO\n");
+    printf("Success, MM format is converted to COO\n");
 
     if (f !=stdin) {
         fclose(f);

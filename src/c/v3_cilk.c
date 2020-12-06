@@ -11,8 +11,6 @@
 #define NWORKERS "4" 
 
 
-extern uint32_t binary_search_yav(uint32_t* array, uint32_t key, int32_t low, int32_t high);
-
 void v3_cilk(uint32_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, const uint32_t n) {
 
     printf("\n----------Version 3 Cilk----------\n");
@@ -45,7 +43,7 @@ void v3_cilk(uint32_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const uin
     cilk_for (uint32_t i = 0; i < n; i++) {
         cilk_for (uint32_t m = csc_col[i]; m < csc_col[i+1] - 1; m++) {
             for (uint32_t k = m + 1; k < csc_col[i+1]; k++) {
-                uint32_t ret = 0;
+                int64_t ret = 0;
                 ret = binary_search_yav(csc_row, csc_row[k], csc_col[csc_row[m]],  csc_col[csc_row[m]+1] - 1);
                 if (ret != -1) {
                     //cilk_count++;

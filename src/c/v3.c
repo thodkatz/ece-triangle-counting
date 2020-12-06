@@ -56,6 +56,6 @@ void v3(uint32_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const uint32_t
     double diff = diff_time(tic, toc);
     printf("Time elapsed (seconds): %0.6f\n", diff);
 
-    printf("Total triangles: %lu\n", count);
+    printf("Total triangles: %u\n", count);
 
 }
