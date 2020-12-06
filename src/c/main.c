@@ -12,7 +12,7 @@
  * 2 --> openmp
  * 3 --> pthreads
  */
-#define MODE 2
+#define MODE 3
 
 # if MODE == 1
 #include "include/v3_cilk.h"
@@ -31,6 +31,7 @@
 void print_vertix(uint32_t*, uint32_t);
 void print_csr(uint32_t *, uint32_t *, uint32_t, uint32_t);
 void print_coo(uint32_t *, uint32_t *, uint32_t);
+
 uint32_t *vertices;
 
 int main(int argc, char *argv[]) {
@@ -45,13 +46,6 @@ int main(int argc, char *argv[]) {
     /* int adjacency[nodes][nodes] = {0}; */
     /* size_t length = sizeof(adjacency)/sizeof(adjacency[0][0]); */
     /* printf("The length of the array is %lu and the nodes are %u\n", length, nodes); */
-
-    /* int adjacency[nodes][nodes] = {{0, 0, 0, 1, 1, 1}, */
-    /*                            {0, 0, 1, 0, 0, 1}, */
-    /*                            {0, 1, 0, 1, 1, 0}, */
-    /*                            {1, 0, 1, 0, 1, 0}, */
-    /*                            {1, 0, 1, 1, 0, 1}, */
-    /*                            {1, 1, 0, 0, 1, 0}}; */
 
     /* // get only the low half of a symmetrical array */
     /* for(int i = 0; i < nodes; i++) { */
@@ -106,23 +100,21 @@ int main(int argc, char *argv[]) {
     /*                    Version 3                           */
     /**********************************************************/
 
-    //printf("\n----------Version 3 Prerequisites----------\n");
+    printf("\n----------Version 3 Prerequisites----------\n");
 
     // Matrix Market format to COO
     uint32_t *coo_row; 
     uint32_t *coo_col; 
     uint32_t nnz = 0; // nnz: number of non zero elements 
     uint32_t n = 0; // rows/columns
-
     mm2coo(argc, argv, &coo_row, &coo_col, nnz, n);
 
-    //printf("Number of nnz (excluding diagonal elements): %u\n", nnz);
-    //printf("Rows/columns: %u\n", n);
+    printf("Number of nnz (excluding diagonal elements): %u\n", nnz);
+    printf("Rows/columns: %u\n", n);
 
     //print_coo(coo_row, coo_col, nnz);
 
     // COO format to CSC
-   
     uint32_t *csc_row_low = (uint32_t*)malloc(nnz * sizeof(uint32_t)); // from the dataset we get the lower triangular by default
     uint32_t *csc_col_low = (uint32_t*)malloc((n+1) * sizeof(uint32_t)); 
     uint32_t isOneBased = 0; // COO is zero based
@@ -137,7 +129,7 @@ int main(int argc, char *argv[]) {
     vertices = NULL;
 
     vertices = (uint32_t*)calloc(n, sizeof(uint32_t));
-    //v3_pre_cilk((uint32_t*)vertices, (uint32_t*)csc_row_low, (uint32_t*)csc_col_low, nnz, n);
+    v3_pre_cilk((uint32_t*)vertices, (uint32_t*)csc_row_low, (uint32_t*)csc_col_low, nnz, n);
     //print_vertix(vertices, n);
     free(vertices);
     vertices = NULL;
@@ -151,25 +143,29 @@ int main(int argc, char *argv[]) {
 
 #elif MODE == 2
     vertices = (uint32_t*)calloc(n, sizeof(uint32_t));
-    v3_openmp((uint32_t*)vertices, (uint32_t*)csc_row_low, (uint32_t*)csc_col_low, nnz, n, atoi(argv[2])); 
+    v3_openmp((uint32_t*)vertices, (uint32_t*)csc_row_low, (uint32_t*)csc_col_low, nnz, n); 
     //print_vertix(vertices, n);
     free(vertices);
     vertices = NULL;
 
     vertices = (uint32_t*)calloc(n, sizeof(uint32_t));
-    //v3_openmp_yav((uint32_t*)vertices, (uint32_t*)csc_row_low, (uint32_t*)csc_col_low, nnz, n);
+    v3_openmp_yav((uint32_t*)vertices, (uint32_t*)csc_row_low, (uint32_t*)csc_col_low, nnz, n);
     //print_vertix(vertices, n);
     free(vertices);
     vertices = NULL;
 #endif
 
-    //printf("\n----------Version 4 Prerequisites----------\n");
+    /**********************************************************/
+    /*                    Version 4                           */
+    /**********************************************************/
+
+    printf("\n----------Version 4 Prerequisites----------\n");
 
     uint32_t* csc_row_up = (uint32_t*)malloc(nnz * sizeof(uint32_t));
     uint32_t* csc_col_up = (uint32_t*)malloc((n+1) * sizeof(uint32_t));
-
     //printf("Swapping the rows and columns. Creating the upper triangle in csc scheme\n");
     coo2csc(csc_row_up, csc_col_up, coo_col, coo_row, nnz, n, 0);
+
     //print_csr(csc_row_up, csc_col_up, nnz, n);
 
     uint32_t* csc_row_complete = (uint32_t*)malloc(2*nnz * sizeof(uint32_t));
@@ -189,7 +185,7 @@ int main(int argc, char *argv[]) {
     vertices = NULL;
 
     vertices = (uint32_t*)calloc(n, sizeof(uint32_t));
-    //v4_yav((uint32_t*)vertices, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete, csc_row_low, csc_col_low, nnz_complete, n);
+    v4_yav((uint32_t*)vertices, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete, csc_row_low, csc_col_low, nnz_complete, n);
     //print_vertix(vertices, n);
     free(vertices);
     vertices = NULL;
@@ -203,14 +199,14 @@ int main(int argc, char *argv[]) {
 
 #elif MODE == 2
     vertices = (uint32_t*)calloc(n, sizeof(uint32_t));
-    v4_openmp((uint32_t*)vertices, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete, csc_row_low, csc_col_low, nnz_complete, n, atoi(argv[2]));
+    v4_openmp((uint32_t*)vertices, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete, csc_row_low, csc_col_low, nnz_complete, n);
     //print_vertix(vertices, n);
     free(vertices);
     vertices = NULL;
 
 #elif MODE == 3
     vertices = (uint32_t*)calloc(n, sizeof(uint32_t));
-    v4_pthread((uint32_t*)vertices, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete, csc_row_low, csc_col_low, nnz_complete, n, atoi(argv[2]));
+    v4_pthread((uint32_t*)vertices, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete, csc_row_low, csc_col_low, nnz_complete, n);
     //print_vertix(vertices, n);
     free(vertices);
     vertices = NULL;

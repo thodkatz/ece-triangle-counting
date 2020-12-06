@@ -1,10 +1,5 @@
 #include "include/main.h"
-/*
- *  Merge two csc schemes of a lower and upper triangle and create one csc scheme of a complete symmetric matrix.
- *  This scheme will be used to exploit the sorted lists in the v4.
- *
- *  nnz: The non zero elements of the complete symmetic matrix in csc scheme
- */
+
 void merge_csc(uint32_t* csc_row_down, uint32_t* csc_col_down, uint32_t* csc_row_up, uint32_t* csc_col_up, 
                uint32_t* csc_row_complete, uint32_t* csc_col_complete, uint32_t& nnz, uint32_t& n) {
 
@@ -33,6 +28,6 @@ void merge_csc(uint32_t* csc_row_down, uint32_t* csc_col_down, uint32_t* csc_row
 
     csc_col_complete[n] = nnz;
 
-    //printf("Success, CSC lower and upper are merged\n");
+    printf("Success, CSC lower and upper are merged\n");
 }
 

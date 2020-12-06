@@ -6,7 +6,7 @@
  * 1 -> binary search
  * 2 -> linear search
  */
-#define SUM_MODE 1
+#define SUM_MODE 2
 
 extern void print_csr(uint32_t *, uint32_t *, uint32_t, uint32_t);
 void spmv(uint32_t*, uint32_t*, uint32_t*, uint32_t*, const uint32_t, const uint32_t);
@@ -22,8 +22,8 @@ uint32_t sum_common(uint32_t, uint32_t, uint32_t*, uint32_t*);
  */
 void v4(uint32_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_complete, uint32_t *csc_row_low, uint32_t *csc_col_low,
             const uint32_t nnz_complete, const uint32_t n) {
-    //printf("\n----------Version 4----------\n");
-    printf("----------Version 4 Binary----------\n");
+
+    printf("\n----------Version 4----------\n");
 
     uint32_t *values = (uint32_t*)malloc(nnz_complete/2 * sizeof(uint32_t));
 
@@ -50,10 +50,9 @@ void v4(uint32_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_comple
     clock_gettime(CLOCK_MONOTONIC, &toc);
     //printf("Toc: %lu seconds and %lu nanoseconds\n", toc.tv_sec, toc.tv_nsec);
     double diff = diff_time(tic, toc);
-    //printf("Time elapsed (seconds): %0.6f\n", diff);
-    printf("%0.6f\n", diff);
+    printf("Time elapsed (seconds): %0.6f\n", diff);
     
-    //printf("Total number of triangles: %u\n", count/3);
+    printf("Total triangles: %u\n", count/3);
 
 }
 

@@ -9,7 +9,7 @@
  */
 #define SUM_MODE 1
 
-// #define NUM_THREADS 8 The setting will be done via env variable in sbatch script
+#define NUM_THREADS 8 
 
 
 extern void print_csr(uint32_t *, uint32_t *, uint32_t, uint32_t);
@@ -24,10 +24,9 @@ extern int binary_search(uint32_t*, uint32_t, int32_t, int32_t);
  *
  */
 void v4_openmp(uint32_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_complete, uint32_t *csc_row_down, uint32_t *csc_col_down,
-            const uint32_t nnz_complete, const uint32_t n, int numThreads) {
-    //printf("\n----------Version 4 OpenMP----------\n");
-    printf("----------Version 4 OpenMP Binary Static----------\n");
+            const uint32_t nnz_complete, const uint32_t n) {
 
+    printf("\n----------Version 4 OpenMP----------\n");
 
     struct timespec tic;
     struct timespec toc;
@@ -37,15 +36,14 @@ void v4_openmp(uint32_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col
 
     uint32_t *values = (uint32_t*)malloc(nnz_complete/2 * sizeof(uint32_t));
 
-    //omp_set_num_threads(NUM_THREADS);
-    omp_set_num_threads(numThreads);
+    omp_set_num_threads(NUM_THREADS);
 
     int tid = 0;
     #pragma omp parallel
     {
         tid = omp_get_thread_num();
         if (tid == 0) {
-            printf("The number of threads are : %d\n", omp_get_num_threads());
+            printf("The number of threads are: %d\n", omp_get_num_threads());
         }
         #pragma omp for schedule(static) 
         for (uint32_t i = 0; i < n; i++) {
@@ -71,10 +69,9 @@ void v4_openmp(uint32_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col
     clock_gettime(CLOCK_MONOTONIC, &toc);
     //printf("Toc: %lu seconds and %lu nanoseconds\n", toc.tv_sec, toc.tv_nsec);
     double diff = diff_time(tic, toc);
-    //printf("Time elapsed (seconds): %0.6f\n", diff);
-    printf("%0.6f\n", diff);
+    printf("Time elapsed (seconds): %0.6f\n", diff);
     
-    //printf("Total number of triangles: %u\n", count/3);
+    printf("Total triangles: %u\n", count/3);
 
 }
 

@@ -8,19 +8,6 @@
 #include <stdint.h>
 #include "include/main.h"
 
-/*****************************************************************************/
-/*                             routine definition                            */
-/*****************************************************************************/
-
-/**
- *  \brief COO to CSC conversion
- *
- *  Converts a square matrix from COO to CSC format.
- *
- *  Note: The routine assumes the input COO and the output CSC matrix
- *  to be square.
- *
- */
 void coo2csc(
   uint32_t       * const row,       /*!< CSC row start indices */
   uint32_t       * const col,       /*!< CSC column indices */
@@ -64,6 +51,6 @@ void coo2csc(
   }
 
 
-  //printf("Success, COO format is converted to CSC\n");
+  printf("Success, COO format is converted to CSC\n");
 
 }

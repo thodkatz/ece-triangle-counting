@@ -6,12 +6,13 @@
 
 void v2(uint32_t *vertices, int *adjacency, const uint32_t nodes) {
     printf("\n----------Version 2----------\n");
-    uint32_t count = 0;
 
     struct timespec tic;
     struct timespec toc;
     clock_gettime(CLOCK_MONOTONIC, &tic);
     printf("Tic: %lu seconds and %lu nanoseconds\n", tic.tv_sec, tic.tv_nsec);
+
+    uint32_t count = 0;
     for (uint32_t i=0;i<nodes-2;i++){
         for (uint32_t j=i+1;j<nodes-1;j++) {
             for (uint32_t k=j+1;k<nodes;k++) {
@@ -24,10 +25,12 @@ void v2(uint32_t *vertices, int *adjacency, const uint32_t nodes) {
             }
         }
     }
+
     clock_gettime(CLOCK_MONOTONIC, &toc);
     printf("Toc: %lu seconds and %lu nanoseconds\n", toc.tv_sec, toc.tv_nsec);
     double diff = diff_time(tic, toc);
     printf("Time elapsed (seconds): %0.6f\n", diff);
+
     printf("Total triangles: %lu\n", count);
 
 }

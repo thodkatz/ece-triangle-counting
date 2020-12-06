@@ -8,22 +8,14 @@
 #include <cilk/reducer_list.h>
 #include <list>
 
-// #define NWORKERS "4" The setting will be done via env variable in sbatch script
-
-/*
- * BINARY = 0 -> linear search
- * BINARY = 1 -> binary search
- */
-#define BINARY 1
+#define NWORKERS "4" 
 
 
 extern uint32_t binary_search_yav(uint32_t* array, uint32_t key, int32_t low, int32_t high);
 
 void v3_cilk(uint32_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, const uint32_t n) {
-    //printf("\n----------Version 3 Cilk----------\n");
-    printf("----------Version 3 Cilk----------\n");
 
-
+    printf("\n----------Version 3 Cilk----------\n");
 
     uint32_t count = 0;
 
@@ -33,55 +25,40 @@ void v3_cilk(uint32_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const uin
     //printf("Tic: %lu seconds and %lu nanoseconds\n", tic.tv_sec, tic.tv_nsec);
 
     // cilkrts set param doesnt work with clang
-    /* __cilkrts_end_cilk(); */
-    /* if (0!= __cilkrts_set_param("nworkers", NWORKERS)) */
-    /* { */
-    /*     printf("Failed to set worker count\n"); */
-    /* } */
+    __cilkrts_end_cilk();
+    if (0!= __cilkrts_set_param("nworkers", NWORKERS))
+    {
+        printf("Failed to set worker count\n");
+    }
 
     int numWorkers = __cilkrts_get_nworkers();
-    //printf("Numbers of workers: %d\n", numWorkers);
-    printf("%d\n", numWorkers);
+    printf("Numbers of workers: %d\n", numWorkers);
     
-    //int currWorker = __cilkrts_get_worker_number();
-    //printf("Current worker: %d\n", currWorker);
 
-    cilk::reducer_opadd<unsigned int> cilk_count;
+    //cilk::reducer_opadd<unsigned int> cilk_count;
     cilk::reducer_list_append<unsigned int> cilk_list;
-    std::list<unsigned int> indeces; // wont work in parallel
-    //std::list<unsigned int>::iterator it;
+    std::list<unsigned int> indeces; 
 
     //uint32_t cilk_count_mem[numWorkers] = {};
     //uint32_t vertices_cilk[n][numWorkers]; 
 
-    //uint32_t ret = 0;
     cilk_for (uint32_t i = 0; i < n; i++) {
         cilk_for (uint32_t m = csc_col[i]; m < csc_col[i+1] - 1; m++) {
             for (uint32_t k = m + 1; k < csc_col[i+1]; k++) {
-                #if BINARY == 1
                 uint32_t ret = 0;
                 ret = binary_search_yav(csc_row, csc_row[k], csc_col[csc_row[m]],  csc_col[csc_row[m]+1] - 1);
                 if (ret != -1) {
-                #elif BINARY == 0
-                for (uint32_t p = csc_col[csc_row[m]]; p < csc_col[csc_row[m]+1]; p++) {
-                    if (csc_row[p] == csc_row[k]) {
-                #endif
-                        //count++; // race bug
-                        cilk_count++;
-                        //cilk_count_mem[currWorker]++; 
+                    //cilk_count++;
+                    //cilk_count_mem[currWorker]++; 
 
-                        cilk_list->push_back(i);
-                        cilk_list->push_back(csc_row[m]);
-                        #if BINARY == 1
-                        cilk_list->push_back(csc_row[ret]);
-                        #elif BINARY == 0
-                        cilk_list->push_back(csc_row[p]);
-                    }
-                        #endif
+                    cilk_list->push_back(i);
+                    cilk_list->push_back(csc_row[m]);
+                    cilk_list->push_back(csc_row[ret]);
                 }
             }
         }
     }
+
     indeces = cilk_list.get_value();
     for (std::list<unsigned int>::iterator i = indeces.begin(); i != indeces.end(); i++) {
         vertices[*i]++;
@@ -97,12 +74,10 @@ void v3_cilk(uint32_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const uin
     clock_gettime(CLOCK_MONOTONIC, &toc);
     //printf("Toc: %lu seconds and %lu nanoseconds\n", toc.tv_sec, toc.tv_nsec);
     double diff = diff_time(tic, toc);
-    //printf("Time elapsed (seconds): %0.6f\n", diff);
-    printf("%0.6f\n", diff);
+    printf("Time elapsed (seconds): %0.6f\n", diff);
 
-    printf("Total triangles (race bug): %lu\n", count);
-    printf("Total triangles using cilk: %u\n", cilk_count.get_value()); 
-    printf("Total triangles using indeces: %u\n", indeces.size()/3); 
+    //printf("Total triangles using opadd: %u\n", cilk_count.get_value()); 
+    printf("Total triangles: %u\n", indeces.size()/3); 
     //printf("Total triangles using mem: %u\n", count_mem); 
 
 }

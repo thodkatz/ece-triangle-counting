@@ -2,7 +2,7 @@
 #include <time.h>
 
 
-uint32_t binary_search_yav(uint32_t* array, uint32_t key, int32_t low, int32_t high);
+int64_t binary_search_yav(uint32_t* array, uint32_t key, int32_t low, int32_t high);
 
 
 /*
@@ -10,8 +10,7 @@ uint32_t binary_search_yav(uint32_t* array, uint32_t key, int32_t low, int32_t h
  *
  */
 void v3_pre_cilk(uint32_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, const uint32_t n) {
-    //printf("\n----------Version 3 Pre Cilk Sequential with Binary Search----------\n");
-    printf("----------Version 3 Pre Cilk Sequential with Binary Search----------\n");
+    printf("\n----------Version 3 Pre Cilk Sequential----------\n");
 
     uint32_t count = 0;
 
@@ -20,7 +19,7 @@ void v3_pre_cilk(uint32_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const
     clock_gettime(CLOCK_MONOTONIC, &tic);
     //printf("Tic: %lu seconds and %lu nanoseconds\n", tic.tv_sec, tic.tv_nsec);
 
-    uint32_t ret = 0;
+    int64_t ret = 0;
     for (uint32_t i = 0; i < n; i++) {
         for (uint32_t m = csc_col[i]; m < csc_col[i+1]; m++) {
             for (uint32_t k = m + 1; k < csc_col[i+1]; k++) {
@@ -39,10 +38,9 @@ void v3_pre_cilk(uint32_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const
     clock_gettime(CLOCK_MONOTONIC, &toc);
     //printf("Toc: %lu seconds and %lu nanoseconds\n", toc.tv_sec, toc.tv_nsec);
     double diff = diff_time(tic, toc);
-    //printf("Time elapsed (seconds): %0.6f\n", diff);
-    printf("%0.6f\n", diff);
+    printf("Time elapsed (seconds): %0.6f\n", diff);
 
-    //printf("Total triangles: %lu\n", count);
+    printf("Total triangles: %lu\n", count);
 
 }
 
@@ -50,7 +48,7 @@ void v3_pre_cilk(uint32_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const
 /*
  * Yet another version of binary search. In this implementation we return the index
  */
-uint32_t binary_search_yav(uint32_t *array, uint32_t key, int32_t low, int32_t high) {
+int64_t binary_search_yav(uint32_t *array, uint32_t key, int32_t low, int32_t high) {
 
 
     if (high >= low) { 

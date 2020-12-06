@@ -21,13 +21,13 @@ void spmv_yav(uint32_t*, std::vector<uint32_t>&, uint32_t*, std::vector<uint32_t
  */
 void v4_yav(uint32_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_complete, uint32_t *csc_row_low, uint32_t *csc_col_low,
             const uint32_t nnz_complete, const uint32_t n) {
-    printf("\n----------Version 4 OP is called----------\n");
 
+    printf("\n----------Version 4 Yet Another Version----------\n");
 
     struct timespec tic;
     struct timespec toc;
     clock_gettime(CLOCK_MONOTONIC, &tic);
-    printf("Tic: %lu seconds and %lu nanoseconds\n", tic.tv_sec, tic.tv_nsec);
+    //printf("Tic: %lu seconds and %lu nanoseconds\n", tic.tv_sec, tic.tv_nsec);
 
     // create a new csc scheme that will exclude zero values
     uint32_t nnz_filtered = 0;
@@ -57,11 +57,11 @@ void v4_yav(uint32_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_co
     for(uint32_t i = 0; i < n; i++) count += vertices[i];
 
     clock_gettime(CLOCK_MONOTONIC, &toc);
-    printf("Toc: %lu seconds and %lu nanoseconds\n", toc.tv_sec, toc.tv_nsec);
+    //printf("Toc: %lu seconds and %lu nanoseconds\n", toc.tv_sec, toc.tv_nsec);
     double diff = diff_time(tic, toc);
     printf("Time elapsed (seconds): %0.6f\n", diff);
     
-    printf("Total number of triangles: %u\n", count/3);
+    printf("Total triangles: %u\n", count/3);
 
 }
 

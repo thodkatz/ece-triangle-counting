@@ -4,11 +4,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-/*
- * source: https://math.nist.gov/MatrixMarket/mmio/c/example_read.c
- *
- * Convert Matrix Market format to COO
- */
+
 void mm2coo(int argc, char *argv[], uint32_t **rows, uint32_t **columns, uint32_t &nnz, uint32_t &n) {
     MM_typecode matcode;
     FILE *f;
@@ -65,6 +61,7 @@ void mm2coo(int argc, char *argv[], uint32_t **rows, uint32_t **columns, uint32_
 
         //printf("Elements: [%lu, %lu]\n", rows[i], columns[i]);
     }
+
     //printf("Success, MM format is converted to COO\n");
 
     if (f !=stdin) {
