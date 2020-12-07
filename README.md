@@ -57,18 +57,4 @@ Using the CSC storage scheme, implement in `C/C++` the sparse matrix-vector prod
 - A 3-page report in PDF format (any pages after the 3rd one will not be taken into account). Report execution time of your implementations, in thoughtful and dense diagrams, with respect to the number of data points n and the number of edges m. Explain your implementation choices and code behavior.
 - Upload the source code of V3 and V4 (sequential and parallel) on GitHub, BitBucket, Dropbox, Google Drive, etc. and add a link in your report.
 
-# Undirected Graph
-![undirected graph](docs/undirected_graph.png)
-
-# Benchmarking 
-
-C has significantly outperformed Python (even with pypy3)!
-
-## Python
-![benchmarking python](docs/benchmarking_python.png)
-
-## C
-
-![benchmarking c](docs/benchmarking_C.png)
-
 

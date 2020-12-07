@@ -3,7 +3,7 @@ CFLAGS=-g -O3 -Wall
 #CILKCC=/usr/local/OpenCilk-9.0.1-Linux/bin/clang++
 CILKCC=g++-7 # my machine (AUR package)
 
-BASE_SRC=main.c diff_time.c mm2coo.c mmio.c coo2csc.c v1.c v2.c v3.c v3_pre_cilk.c v4.c v4_yav.c merge_csc.c 
+BASE_SRC=main.c diff_time.c mm2coo.c mmio.c coo2csc.c v1.c v2.c v3.c v3_pre_cilk.c v4.c v4_yav.c 
 MP_SRC=$(BASE_SRC) v3_openmp.c v3_openmp_yav.c v4_openmp.c
 CILK_SRC= $(BASE_SRC) v3_cilk.c v4_cilk.c
 PTHREAD_SRC=$(BASE_SRC) v4_pthread.c
@@ -29,4 +29,4 @@ pthread:
 .PHONY: clean
 
 clean:
-	rm *.o main_cilk main_openmp main_pthread
+	rm *.o main_cilk main_openmp main_pthread main
