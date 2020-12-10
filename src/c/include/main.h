@@ -42,7 +42,7 @@ int64_t binary_search_yav(uint32_t *array, uint32_t key, int32_t low, int32_t hi
 void v4(uint32_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_complete, uint32_t *csc_row_low, uint32_t *csc_col_low, const uint32_t nnz_complete, const uint32_t n);
 
 /*
- * \brief Sparse matrix vector multiplication
+ * \brief Sparse matrix vector multiplication given a csc scheme of the low triangular part of a symmetric matrix
  */
 void spmv(uint32_t *y, uint32_t *csc_row, uint32_t *csc_col, uint32_t *values, const uint32_t nnz, const uint32_t n);
 

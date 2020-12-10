@@ -2,7 +2,7 @@
 venv/
 __pycache__/
 *.o
-main*
+main_*
 sandbox/
 matrices_collection/
 *.mtx

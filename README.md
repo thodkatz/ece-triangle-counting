@@ -1,3 +1,29 @@
+# How to run this?
+
+The main project implementation is located in `src/c`. Especially for the cilk version, the compiler that is used was `g++ 7.5.0`. For that purpose use a gcc version under 8 to compile the program along with the `cilkrts` runtime. You probably need to modify the Makefile to adjust the compiler settings. In Arch Linux, I have used the AUR package gcc7 to be compatible with cilk requirements.
+
+All the versions (Pthread, OpenMP, Cilk) have a common main and the separation is achieved using macros. In the `main.c` change the `MODE` to the corresponding version you want to test. For example `MODE == 1` will run all the cilk implementations including v3 and v4. If you want to test a specific function, you may need to comment some of the versions in the `main.c` (not very convenient though...). 
+
+Each time you are using a new `MODE`, you need to use the appropriate target for the `make`. For example for `MODE == 1`, then you need to run `make cilk`, for `MODE == 2`, you need to run `make openmp`. Then the name of the executable file will be either `main`, `main_cilk`, `main_openmp`, `main_pthread`. 
+
+## Threads settings
+
+To adjust the number of threads for each version, there is a corresponding macro (e.g. NUM\_THREADS) that you can edit manually in the source code to the desired number of threads. In the current implementation, we don't use command line arguments to configure the number of threads.
+
+During the program execution, there are print statements for the number of threads for verification.
+
+## Command line arguements
+
+You need to pass one command line argument: This should be the `.mtx` (Matrix Market format) file for the sparse matrix you want to test. For example under the `src/c` you could create a new folder `matrices` and store the `<matrix file name>.mtx`. Then for the cilk version under `src/c` you can compile and run the program doing the following:
+
+- `make cilk` 
+- `./main_cilk matrices/com-Youtube.mtx`
+
+
+# Documentation
+
+The documentation of the functions is located in the header files, under `src/c/include/`.
+
 # Description
 
 ## Vertexwise triangle counting
