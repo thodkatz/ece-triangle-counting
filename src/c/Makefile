@@ -29,4 +29,4 @@ pthread:
 .PHONY: clean
 
 clean:
-	rm *.o main_cilk main_openmp main_pthread main
+	rm -f *.o main_cilk main_openmp main_pthread main

@@ -7,22 +7,23 @@
 
 /*
  * MODE =
- * 0 --> sequential
- * 1 --> cilk
- * 2 --> openmp
- * 3 --> pthreads
+ * 0 --> sequential v1 v2
+ * 1 --> sequential v3 v4
+ * 2 --> cilk
+ * 3 --> openmp
+ * 4 --> pthreads
  */
 #define MODE 0
 
-# if MODE == 1
+# if MODE == 2
 #include "include/v3_cilk.h"
 #include "include/v4_cilk.h"
 
-#elif MODE == 2
+#elif MODE == 3
 #include "include/v3_openmp.h"
 #include "include/v4_openmp.h"
 
-#elif MODE == 3
+#elif MODE == 4
 #include "include/v4_pthread.h"
 #include <pthread.h>
 #endif
@@ -41,33 +42,25 @@ int main(int argc, char *argv[]) {
     /*                  Version 1 and 2                       */
     /**********************************************************/
 
-    /* printf("\n----------Version 1 and 2 Prerequisites----------\n"); */
-    /* const uint32_t nodes = 2; */ 
-    /* int adjacency[nodes][nodes] = {0}; */
-    /* size_t length = sizeof(adjacency)/sizeof(adjacency[0][0]); */
-    /* printf("The length of the array is %lu and the nodes are %u\n", length, nodes); */
-
-    /* // get only the low half of a symmetrical array */
-    /* for(int i = 0; i < nodes; i++) { */
-    /*     for (int j = 0; j < nodes; j++) { */
-    /*         if(i<j) adjacency[i][j] = 0; */
-    /*     } */
-    /* } */
+#if MODE == 0
+    printf("\n----------Version 1 and 2 Prerequisites----------\n");
+    const uint32_t nodes = 100; 
+    int adjacency[nodes][nodes] = {0};
 
 
     // create a random array WARNING: it should be symmetrical. Not just random */
-    /* srand(time(NULL)); */
-    /* printf("The random generated array is:\n"); */
-    /* for (uint32_t i = 0; i < nodes; i++) */
-    /* { */
-    /*     for (uint32_t j = 0; j < i+1; j++) */
-    /*     { */
-    /*         adjacency[i][j] = rand()%2; */
-    /*         adjacency[j][i] = adjacency[i][j]; */
-    /*         if (i == j) */
-    /*             adjacency[i][i] = 0; // no self loops */
-    /*     } */
-    /* } */
+    srand(time(NULL));
+    printf("The random generated array is:\n");
+    for (uint32_t i = 0; i < nodes; i++)
+    {
+        for (uint32_t j = 0; j < i+1; j++)
+        {
+            adjacency[i][j] = rand()%2;
+            adjacency[j][i] = adjacency[i][j];
+            if (i == j)
+                adjacency[i][i] = 0; // no self loops
+        }
+    }
     
     /* for (uint32_t i = 0; i < nodes; i++) */
     /* { */
@@ -84,18 +77,20 @@ int main(int argc, char *argv[]) {
     /* } */
 
 
-    /* vertices = (uint32_t*)calloc(nodes, sizeof(uint64_t)); */
-    /* v1((uint32_t*)vertices, (int *)adjacency, nodes); */
-    /* print_vertix(vertices, nodes); */
-    /* free(vertices); */
-    /* vertices = NULL; */
+    vertices = (uint32_t*)calloc(nodes, sizeof(uint64_t));
+    v1((uint32_t*)vertices, (int *)adjacency, nodes);
+    //print_vertix(vertices, nodes);
+    free(vertices);
+    vertices = NULL;
 
-    /* vertices = (uint32_t*)calloc(nodes, sizeof(uint64_t)); */
-    /* v2((uint32_t*)vertices, (int *)adjacency, nodes); */
-    /* print_vertix(vertices, nodes); */
-    /* free(vertices); */
-    /* vertices = NULL; */
+    vertices = (uint32_t*)calloc(nodes, sizeof(uint64_t));
+    v2((uint32_t*)vertices, (int *)adjacency, nodes);
+    //print_vertix(vertices, nodes);
+    free(vertices);
+    vertices = NULL;
 
+    return 0;
+#endif
     /**********************************************************/
     /*                    Version 3                           */
     /**********************************************************/
@@ -121,7 +116,7 @@ int main(int argc, char *argv[]) {
     
     coo2csc(csc_row_low, csc_col_low, coo_row, coo_col, nnz, n, isOneBased);
     //print_csr(csc_row_low, csc_col_low, nnz, n);
-    
+#if MODE == 1 
     vertices = (uint32_t*)calloc(n, sizeof(uint32_t));
     //v3((uint32_t*)vertices, (uint32_t*)csc_row_low, (uint32_t*)csc_col_low, nnz, n);
     //print_vertix(vertices, n);
@@ -134,14 +129,14 @@ int main(int argc, char *argv[]) {
     free(vertices);
     vertices = NULL;
     
-#if MODE == 1
+#elif MODE == 2
     vertices = (uint32_t*)calloc(n, sizeof(uint32_t));
     v3_cilk((uint32_t*)vertices, (uint32_t*)csc_row_low, (uint32_t*)csc_col_low, nnz, n);
     //print_vertix(vertices, n);
     free(vertices);
     vertices = NULL;
 
-#elif MODE == 2
+#elif MODE == 3
     vertices = (uint32_t*)calloc(n, sizeof(uint32_t));
     v3_openmp((uint32_t*)vertices, (uint32_t*)csc_row_low, (uint32_t*)csc_col_low, nnz, n); 
     //print_vertix(vertices, n);
@@ -158,7 +153,6 @@ int main(int argc, char *argv[]) {
     /**********************************************************/
     /*                    Version 4                           */
     /**********************************************************/
-
     printf("\n----------Version 4 Prerequisites----------\n");
 
     uint32_t* csc_row_up = (uint32_t*)malloc(nnz * sizeof(uint32_t));
@@ -178,6 +172,7 @@ int main(int argc, char *argv[]) {
 
     //print_csr(csc_row_complete, csc_col_complete, nnz_complete, n);
 
+#if MODE == 1
     vertices = (uint32_t*)calloc(n, sizeof(uint32_t));
     v4((uint32_t*)vertices, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete, csc_row_low, csc_col_low, nnz_complete, n);
     //print_vertix(vertices, n);
@@ -190,21 +185,21 @@ int main(int argc, char *argv[]) {
     free(vertices);
     vertices = NULL;
 
-#if MODE == 1
+#elif MODE == 2
     vertices = (uint32_t*)calloc(n, sizeof(uint32_t));
     v4_cilk((uint32_t*)vertices, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete, csc_row_low, csc_col_low, nnz_complete, n);
     //print_vertix(vertices, n);
     free(vertices);
     vertices = NULL;
 
-#elif MODE == 2
+#elif MODE == 3
     vertices = (uint32_t*)calloc(n, sizeof(uint32_t));
     v4_openmp((uint32_t*)vertices, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete, csc_row_low, csc_col_low, nnz_complete, n);
     //print_vertix(vertices, n);
     free(vertices);
     vertices = NULL;
 
-#elif MODE == 3
+#elif MODE == 4
     vertices = (uint32_t*)calloc(n, sizeof(uint32_t));
     v4_pthread((uint32_t*)vertices, (uint32_t*)csc_row_complete, (uint32_t*)csc_col_complete, csc_row_low, csc_col_low, nnz_complete, n);
     //print_vertix(vertices, n);
@@ -223,7 +218,7 @@ int main(int argc, char *argv[]) {
     free(csc_col_complete);
     free(coo_row);
     free(coo_col);
-    #if MODE == 3
+    #if MODE == 4
     pthread_exit(NULL);
     #endif
     return 0;

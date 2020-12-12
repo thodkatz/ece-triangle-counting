@@ -66,7 +66,7 @@ uint32_t sum_common(uint32_t i,uint32_t j, uint32_t *csc_row, uint32_t *csc_col)
 void v4_yav(uint32_t *vertices, uint32_t *csc_row_complete, uint32_t *csc_col_complete, uint32_t *csc_row_low, uint32_t *csc_col_low, const uint32_t nnz_complete, const uint32_t n);
 
 /*
- * \breif SpMV utilizing vectors
+ * \brief SpMV utilizing vectors
  */
 void spmv_yav(uint32_t *y, std::vector<uint32_t> &csc_row, uint32_t *csc_col, std::vector<uint32_t> &values, const uint32_t nnz, const uint32_t n);
 
