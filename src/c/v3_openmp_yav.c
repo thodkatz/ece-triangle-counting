@@ -9,6 +9,7 @@
 
 extern int64_t binary_search_yav(uint32_t* array, uint32_t key, int32_t low, int32_t high);
 
+/* Alternative OpenMP implementation for the v3. It isn't used for testing performance eventually */
 void v3_openmp_yav(uint32_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, const uint32_t n) {
 
     printf("\n----------Version 3 OpenMP Yet Another Version----------\n");

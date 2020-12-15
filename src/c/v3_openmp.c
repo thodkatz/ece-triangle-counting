@@ -7,6 +7,7 @@
 
 extern int64_t binary_search_yav(uint32_t* array, uint32_t key, int32_t low, int32_t high);
 
+/* It is used for testing openmp performance for the project */
 void v3_openmp(uint32_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const uint32_t nnz, const uint32_t n) {
 
     printf("\n----------Version 3 OpenMP----------\n");
@@ -33,7 +34,7 @@ void v3_openmp(uint32_t *vertices, uint32_t *csc_row, uint32_t *csc_col, const u
         }
 
         //#pragma omp  for reduction(+:count, vertices[:n]) 
-        #pragma omp  for reduction(+: vertices[:n]) 
+        #pragma omp  for schedule(dynamic) reduction(+: vertices[:n]) 
         for (uint32_t i = 0; i < n; i++) {
             for (uint32_t m = csc_col[i]; m < csc_col[i+1]; m++) {
                 for (uint32_t k = m + 1; k < csc_col[i+1]; k++) {
