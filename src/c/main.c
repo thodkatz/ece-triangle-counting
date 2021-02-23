@@ -32,6 +32,7 @@
 void print_vertix(uint32_t*, uint32_t);
 void print_csr(uint32_t *, uint32_t *, uint32_t, uint32_t);
 void print_coo(uint32_t *, uint32_t *, uint32_t);
+void print_adjacency(int *, uint32_t, uint32_t);
 
 uint32_t *vertices;
 
@@ -44,7 +45,7 @@ int main(int argc, char *argv[]) {
 
 #if MODE == 0
     printf("\n----------Version 1 and 2 Prerequisites----------\n");
-    const uint32_t nodes = 100; 
+    const uint32_t nodes = 5; 
     int adjacency[nodes][nodes] = {0};
 
 
@@ -62,20 +63,7 @@ int main(int argc, char *argv[]) {
         }
     }
     
-    /* for (uint32_t i = 0; i < nodes; i++) */
-    /* { */
-    /*     if (i == 0) */
-    /*         printf("[["); */
-    /*     else */
-    /*         printf(" ["); */
-    /*     for (uint32_t j = 0; j < nodes; j++) */
-    /*         printf("%d,", adjacency[i][j]); */
-    /*     if (i == nodes -1) */
-    /*         printf("]]\n"); */
-    /*     else */
-    /*         printf("],\n"); */
-    /* } */
-
+    //print_adjacency((int*)adjacency, nodes, nodes);
 
     vertices = (uint32_t*)calloc(nodes, sizeof(uint64_t));
     v1((uint32_t*)vertices, (int *)adjacency, nodes);
@@ -279,5 +267,21 @@ void print_csr(uint32_t *csc_row, uint32_t *csc_col, uint32_t nnz, uint32_t n) {
 void print_coo(uint32_t *coo_row, uint32_t *coo_col, uint32_t nnz) {
     for (uint32_t i=0; i<nnz; i++) {
         printf("[%u, %u]\n", coo_row[i], coo_col[i]);
+    }
+}
+
+void print_adjacency(int *adjacency, uint32_t rows, uint32_t cols) {
+    for (uint32_t i = 0; i < rows; i++)
+    {
+        if (i == 0)
+            printf("[[");
+        else
+            printf(" [");
+        for (uint32_t j = 0; j < cols; j++)
+            printf("%d,", adjacency[i*cols + j]);
+        if (i == rows -1)
+            printf("]]\n");
+        else
+            printf("],\n");
     }
 }
