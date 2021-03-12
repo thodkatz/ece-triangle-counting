@@ -1,28 +1,22 @@
-# How to run this?
+<h1>Table of contents</h1>
 
-The main project implementation is located in `src/c`. Especially for the cilk version, the compiler that is used was `g++ 7.5.0`. For that purpose use a gcc version under 8 to compile the program along with the `cilkrts` runtime. You probably need to modify the Makefile to adjust the compiler settings. In Arch Linux, I have used the AUR package gcc7 to be compatible with cilk requirements.
-
-All the versions (Pthread, OpenMP, Cilk) have a common main and the separation is achieved using macros. In the `main.c` change the `MODE` to the corresponding version you want to test. For example `MODE == 1` will run all the cilk implementations including v3 and v4. If you want to test a specific function, you may need to comment some of the versions in the `main.c` (not very convenient though...). 
-
-Each time you are using a new `MODE`, you need to use the appropriate target for the `make`. For example for `MODE == 1`, then you need to run `make cilk`, for `MODE == 2`, you need to run `make openmp`. Then the name of the executable file will be either `main`, `main_cilk`, `main_openmp`, `main_pthread`. 
-
-## Threads settings
-
-To adjust the number of threads for each version, there is a corresponding macro (e.g. NUM\_THREADS) that you can edit manually in the source code to the desired number of threads. In the current implementation, we don't use command line arguments to configure the number of threads.
-
-During the program execution, there are print statements for the number of threads for verification.
-
-## Command line arguements
-
-You need to pass one command line argument: This should be the `.mtx` (Matrix Market format) file for the sparse matrix you want to test. For example under the `src/c` you could create a new folder `matrices` and store the `<matrix file name>.mtx`. Then for the cilk version under `src/c` you can compile and run the program doing the following:
-
-- `make cilk` 
-- `./main_cilk matrices/com-Youtube.mtx`
+- [Description](#description)
+  - [Vertexwise triangle counting](#vertexwise-triangle-counting)
+  - [Triangle detection and counting](#triangle-detection-and-counting)
+  - [Preliminaries](#preliminaries)
+  - [Main part](#main-part)
+    - [3.1 Sequential implementation](#31-sequential-implementation)
+      - [3.1.1 Implement and verify the formula](#311-implement-and-verify-the-formula)
+      - [3.1.2 Sparse matrix-vector product](#312-sparse-matrix-vector-product)
+      - [3.1.3 Masked sparse matrix-matrix product](#313-masked-sparse-matrix-matrix-product)
+    - [3.2 Parallel implementation](#32-parallel-implementation)
+- [Report](#report)
+- [How to run this?](#how-to-run-this)
+  - [Threads settings](#threads-settings)
+  - [Command line arguements](#command-line-arguements)
+- [Documentation](#documentation)
 
 
-# Documentation
-
-The documentation of the functions is located in the header files, under `src/c/include/`.
 
 # Description
 
@@ -58,9 +52,9 @@ Parallelize your V3 code with OpenCilk and OpenMP, run it in parallel and compar
 
 ## Main part
 
-We are ready to jump a bit further using the mathematical properties of the adjacency matrix A. The i,j element of the matrix-matrix product A\*A is equal to the number of possible walks from node i to node j of length exactly 2, i.e. how many k exist that I can go from i to k and then from k to j. If there is also an edge A[i][j], then that is the number of triangles we are after!
+We are ready to jump a bit further using the mathematical properties of the adjacency matrix A. The i,j element of the matrix-matrix product A×A is equal to the number of possible walks from node i to node j of length exactly 2, i.e. how many k exist that I can go from i to k and then from k to j. If there is also an edge A[i][j], then that is the number of triangles we are after!
 
-Formally, the number of triangles c3 incident with each node is: ![main equation](https://latex.codecogs.com/gif.latex?c_%7B3%7D%3D%28A%20%5Codot%28A%20A%29%29%20e%20/%202)
+Formally, the number of triangles c3 incident with each node is: C3 = (A ⊙ (A×A)) e/2
 where ⊙ denotes the Hadamard (or element-wise) product and e is a vector of length n where every element equals 1. We divide the result by 2 because we count both `ikj` and `ijk`
 
 ### 3.1 Sequential implementation
@@ -69,18 +63,42 @@ where ⊙ denotes the Hadamard (or element-wise) product and e is a vector of le
 Check the validity of the formula by implementing it in a high-level language, such as `MATLAB, Octave, Python, Julia` or whatever else you feel comfortable with.
 
 #### 3.1.2 Sparse matrix-vector product
-Using the CSC storage scheme, implement in `C/C++` the sparse matrix-vector product C=Av, where v is a dense vector. Validate your implementation by comparing your results against multiple matrices A and vectors v.
+Using the CSC storage scheme, implement in `C/C++` the sparse matrix-vector product C=A×v, where v is a dense vector. Validate your implementation by comparing your results against multiple matrices A and vectors v.
 
 #### 3.1.3 Masked sparse matrix-matrix product
-(V4) Implement a routine to compute the masked sparse matrix-matrix product C=A⊙(AA), where A is a symmetric, sparse matrix. Note: Due to the Hadamard product with A the result will have the same sparsity as the input matrix A. You do not need to compute the values C(i,j), where A(i,j)=0. The number of triangles c3 at each vertex node is ![first equation](https://latex.codecogs.com/gif.latex?C_3%20%3D%20C_e/2).
+(V4) Implement a routine to compute the masked sparse matrix-matrix product C=A⊙(A×A), where A is a symmetric, sparse matrix. Note: Due to the Hadamard product with A the result will have the same sparsity as the input matrix A. You do not need to compute the values C(i,j), where A(i,j)=0. The number of triangles c3 at each vertex node is C3 = C × e/2.
 
  **Caution**: A×A will become dense, if there is even one node connected to most of the others. Make sure you use the masking to calculate only the elements of A×A at the nonzero positions of A.
 
  ### 3.2 Parallel implementation
  Parallelize your masked sparse matrix-matrix product code (V4) with OpenCilk, OpenMP, and Pthreads run it in parallel and compare sequential and parallel agreement in results and run times for different large datasets (we will propose which ones soon) and produce diagrams to study the scalability of your code. Compare the triangle counting using the masked sparse matrix-matrix product and the V3 code, implemented in the preliminary.
 
-## Report
-- A 3-page report in PDF format (any pages after the 3rd one will not be taken into account). Report execution time of your implementations, in thoughtful and dense diagrams, with respect to the number of data points n and the number of edges m. Explain your implementation choices and code behavior.
-- Upload the source code of V3 and V4 (sequential and parallel) on GitHub, BitBucket, Dropbox, Google Drive, etc. and add a link in your report.
+# Report
+
+[Vertexwise triangle counting](report/report.pdf)
+
+# How to run this?
+
+The main project implementation is located in `src/c`. Especially for the cilk version, the compiler that is used was `g++ 7.5.0`. For that purpose use a gcc version under 8 to compile the program along with the `cilkrts` runtime. You probably need to modify the Makefile to adjust the compiler settings. In Arch Linux, I have used the AUR package gcc7 to be compatible with cilk requirements.
+
+All the versions (Pthread, OpenMP, Cilk) have a common main and the separation is achieved using macros. In the `main.c` change the `MODE` to the corresponding version you want to test. For example `MODE == 1` will run all the cilk implementations including v3 and v4. If you want to test a specific function, you may need to comment some of the versions in the `main.c` (not very convenient though...). 
+
+Each time you are using a new `MODE`, you need to use the appropriate target for the `make`. For example for `MODE == 1`, then you need to run `make cilk`, for `MODE == 2`, you need to run `make openmp`. Then the name of the executable file will be either `main`, `main_cilk`, `main_openmp`, `main_pthread`. 
+
+## Threads settings
+
+To adjust the number of threads for each version, there is a corresponding macro (e.g. NUM\_THREADS) that you can edit manually in the source code to the desired number of threads. In the current implementation, we don't use command line arguments to configure the number of threads.
+
+During the program execution, there are print statements for the number of threads for verification.
+
+## Command line arguements
+
+You need to pass one command line argument: This should be the `.mtx` (Matrix Market format) file for the sparse matrix you want to test. For example under the `src/c` you could create a new folder `matrices` and store the `<matrix file name>.mtx`. Then for the cilk version under `src/c` you can compile and run the program doing the following:
+
+- `make cilk` 
+- `./main_cilk matrices/com-Youtube.mtx`
 
 
+# Documentation
+
+The documentation of the functions is located in the header files, under `src/c/include/`.
